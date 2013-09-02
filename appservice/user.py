@@ -2,6 +2,6 @@ from datalayer.dataaccess.user import UserDataAccess
 from datalayer.models.models import User
 
 class UserAppService():
-    def create(self, obj):
+    def create(self, vm):
         da = UserDataAccess()
-        da.create(obj)
+        da.create(vm)
