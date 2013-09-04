@@ -10,6 +10,11 @@ class AgentAuditTrail(ndb.Model):
     action = ndb.StringProperty()
     message = ndb.StringProperty()
     
+class AttendantAuditTrail(ndb.Model):
+    attendant_code = ndb.StringProperty(required=True)
+    action = ndb.StringProperty()
+    message = ndb.StringProperty()
+    
 class User(ndb.Model):
     code = ndb.StringProperty(required=True)
     name = ndb.StringProperty(required=True)

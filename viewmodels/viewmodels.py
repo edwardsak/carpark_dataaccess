@@ -16,3 +16,12 @@ class AgentViewModel():
     active = True
     last_modified = ''
     user_code = ''
+
+class AttendantViewModel():
+    code = ''
+    name = ''
+    pwd = ''
+    old_pwd = ''
+    active = True
+    last_modified = ''
+    user_code = ''
