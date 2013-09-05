@@ -24,6 +24,11 @@ class AgentDataAccess():
         data.code = vm.code
         data.name = vm.name
         data.pwd = vm.pwd
+        data.account_type = vm.account_type
+        data.address = vm.address
+        data.tel = vm.tel
+        data.hp = vm.hp
+        data.email = vm.email
         data.active = vm.active
         data.last_modified = str(DateTime.malaysia_now())
         data.put()
@@ -44,6 +49,11 @@ class AgentDataAccess():
             raise Exception('Record has been modified by other user.')
         
         data.name = vm.name
+        data.account_type = vm.account_type
+        data.address = vm.address
+        data.tel = vm.tel
+        data.hp = vm.hp
+        data.email = vm.email
         data.active = vm.active
         data.last_modified = str(DateTime.malaysia_now())
         data.put()

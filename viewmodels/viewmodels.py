@@ -3,7 +3,7 @@ class UserViewModel():
     name = ''
     pwd = ''
     old_pwd = ''
-    level = 0
+    level = 3
     active = True
     last_modified = ''
     user_code = ''
@@ -13,6 +13,13 @@ class AgentViewModel():
     name = ''
     pwd = ''
     old_pwd = ''
+    address = ''
+    tel = ''
+    hp = ''
+    email = ''
+    account_type = 1
+    comm_per = 0
+    bal_amt = 0
     active = True
     last_modified = ''
     user_code = ''
