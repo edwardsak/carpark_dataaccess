@@ -94,6 +94,14 @@ class Tran(ndb.Model):
     tran_code = ndb.StringProperty(required=True)
     tran_date = ndb.DateTimeProperty()
     seq = ndb.IntegerProperty()
+
+class AgentMovement(ndb.Model):
+    agent_code = ndb.StringProperty(required=True)
+    movement_date = ndb.DateTimeProperty(required=True)
+    bf_amt = ndb.FloatProperty()
+    deposit_amt = ndb.FloatProperty()
+    top_up_amt = ndb.FloatProperty()
+    bal_amt = ndb.FloatProperty()
     
 class Buy(ndb.Model):
     tran_code = ndb.StringProperty(required=True)
@@ -128,8 +136,85 @@ class Buy(ndb.Model):
     def get_tran_code(self):
         return "BUY%04d" % self.seq
     
-    def get_payment_type(self):
+    @staticmethod
+    def get_payment_type():
         return (1, 'Cash Bank In'), (2, 'Cheque Bank In')
     
-    def get_verify_status(self):
+    @staticmethod
+    def get_verify_status():
         return (1, 'Accept'), (2, 'Reject')
+    
+class Deposit(ndb.Model):
+    tran_code = ndb.StringProperty(required=True)
+    tran_type = ndb.IntegerProperty()
+    tran_date = ndb.DateTimeProperty()
+    seq = ndb.IntegerProperty()
+    agent_code = ndb.StringProperty()
+    agent = ndb.KeyProperty(kind=Agent)
+    amt = ndb.FloatProperty()
+    payment_date = ndb.DateTimeProperty()
+    payment_type = ndb.IntegerProperty()
+    payment_ref_no = ndb.StringProperty()
+    payment_file_name = ndb.StringProperty()
+    payment_url = ndb.StringProperty()
+    verified_by = ndb.StringProperty()
+    verify_status = ndb.IntegerProperty()
+    created_by = ndb.StringProperty()
+    created_date = ndb.DateTimeProperty()
+    modified_by = ndb.StringProperty()
+    modified_date = ndb.DateTimeProperty()
+    void_by = ndb.StringProperty()
+    void_date = ndb.DateTimeProperty()
+    void = ndb.BooleanProperty()
+    remark = ndb.StringProperty()
+    last_modified = ndb.StringProperty()
+    
+    def get_tran_code(self):
+        return "DEP%04d" % self.seq
+    
+class Register(ndb.Model):
+    tran_code = ndb.StringProperty(required=True)
+    tran_type = ndb.IntegerProperty()
+    tran_date = ndb.DateTimeProperty()
+    seq = ndb.IntegerProperty()
+    agent_code = ndb.StringProperty()
+    agent = ndb.KeyProperty(kind=Agent)
+    car_reg_no = ndb.StringProperty()
+    tag_no = ndb.StringProperty()
+    created_by = ndb.StringProperty()
+    created_date = ndb.DateTimeProperty()
+    modified_by = ndb.StringProperty()
+    modified_date = ndb.DateTimeProperty()
+    void_by = ndb.StringProperty()
+    void_date = ndb.DateTimeProperty()
+    void = ndb.BooleanProperty()
+    remark = ndb.StringProperty()
+    last_modified = ndb.StringProperty()
+    
+    def get_tran_code(self):
+        return "REG%04d" % self.seq
+    
+class TopUp(ndb.Model):
+    tran_code = ndb.StringProperty(required=True)
+    tran_type = ndb.IntegerProperty()
+    tran_date = ndb.DateTimeProperty()
+    seq = ndb.IntegerProperty()
+    agent_code = ndb.StringProperty()
+    agent = ndb.KeyProperty(kind=Agent)
+    car_reg_no = ndb.StringProperty()
+    sub_total = ndb.FloatProperty()
+    comm_per = ndb.FloatProperty()
+    comm_amt = ndb.FloatProperty()
+    amt = ndb.FloatProperty()
+    created_by = ndb.StringProperty()
+    created_date = ndb.DateTimeProperty()
+    modified_by = ndb.StringProperty()
+    modified_date = ndb.DateTimeProperty()
+    void_by = ndb.StringProperty()
+    void_date = ndb.DateTimeProperty()
+    void = ndb.BooleanProperty()
+    remark = ndb.StringProperty()
+    last_modified = ndb.StringProperty()
+    
+    def get_tran_code(self):
+        return "TOP%04d" % self.seq
