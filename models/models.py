@@ -73,12 +73,33 @@ class Tag(ndb.Model):
     code = ndb.StringProperty(required=True)
     agent = ndb.KeyProperty(kind=Agent)
     car = ndb.KeyProperty(kind=Car)
+
+class Master(ndb.Model):
+    kind = ndb.StringProperty(required=True)
+    seq = ndb.IntegerProperty(required=True)
+    
+class Closing(ndb.Model):
+    closing_date = ndb.DateTimeProperty()
+    
+class SystemSetting(ndb.Model):
+    tag_sell_price = ndb.FloatProperty()
+    user_access_lock = ndb.BooleanProperty()
+    agent_access_lock = ndb.BooleanProperty()
+    attendant_access_lock = ndb.BooleanProperty()
+    customer_access_lock = ndb.BooleanProperty()
+    announcement = ndb.StringProperty()
+       
+class Tran(ndb.Model):
+    tran_type = ndb.IntegerProperty(required=True)
+    tran_code = ndb.StringProperty(required=True)
+    tran_date = ndb.DateTimeProperty()
+    seq = ndb.IntegerProperty()
     
 class Buy(ndb.Model):
-    doc_no = ndb.StringProperty(required=True)
-    seq = ndb.IntegerProperty(required=True)
-    tran_date = ndb.DateTimeProperty()
+    tran_code = ndb.StringProperty(required=True)
     tran_type = ndb.IntegerProperty()
+    tran_date = ndb.DateTimeProperty()
+    seq = ndb.IntegerProperty()
     agent_code = ndb.StringProperty()
     agent = ndb.KeyProperty(kind=Agent)
     qty = ndb.IntegerProperty()
@@ -87,10 +108,28 @@ class Buy(ndb.Model):
     comm_per = ndb.FloatProperty()
     comm_amt = ndb.FloatProperty() 
     amt = ndb.FloatProperty()
+    payment_date = ndb.DateTimeProperty()
+    payment_type = ndb.IntegerProperty()
+    payment_ref_no = ndb.StringProperty()
+    payment_file_name = ndb.StringProperty()
+    payment_url = ndb.StringProperty()
+    verified_by = ndb.StringProperty()
+    verify_status = ndb.IntegerProperty()
     created_by = ndb.StringProperty()
     created_date = ndb.DateTimeProperty()
     modified_by = ndb.StringProperty()
     modified_date = ndb.DateTimeProperty()
     void_by = ndb.StringProperty()
+    void_date = ndb.DateTimeProperty()
     void = ndb.BooleanProperty()
+    remark = ndb.StringProperty()
     last_modified = ndb.StringProperty()
+    
+    def get_tran_code(self):
+        return "BUY%04d" % self.seq
+    
+    def get_payment_type(self):
+        return (1, 'Cash Bank In'), (2, 'Cheque Bank In')
+    
+    def get_verify_status(self):
+        return (1, 'Accept'), (2, 'Reject')

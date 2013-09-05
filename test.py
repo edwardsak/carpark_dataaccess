@@ -2,12 +2,21 @@ from datalayer.viewmodels.viewmodels import UserViewModel, AgentViewModel
 from datalayer.appservice.admin.user import UserAppService
 from datalayer.appservice.admin.agent import AgentAppService
 from datalayer.appservice.admin.account import AccountAppService
+from datalayer.appservice.admin.systemsetting import SystemSettingAppService
+from datalayer.appservice.admin.closing import ClosingAppService
 from datalayer.models.models import User, Agent
+from sharelib.object import Object
+from sharelib.utils import DateTime
+
+import datetime
 
 import webapp2
 
 class Test(webapp2.RequestHandler):
     def get(self):
+        self.create_system_setting()
+        self.create_closing()
+        
         self.create_user()
         self.update_user()
         self.user_login()
@@ -106,5 +115,35 @@ class Test(webapp2.RequestHandler):
             
         except Exception, ex:
             self.response.write("update_agent failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def create_system_setting(self):
+        try:
+            vm = Object()
+            vm.tag_sell_price = 10
+            
+            app_service = SystemSettingAppService()
+            app_service.create(vm)
+            
+            self.response.write("create_system_setting OK.")
+            
+        except Exception, ex:
+            self.response.write("create_system_setting failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def create_closing(self):
+        try:
+            vm = Object()
+            vm.close_date = DateTime.malaysia_now() - datetime.timedelta(days=1)
+            
+            app_service = ClosingAppService()
+            app_service.create(vm)
+            
+            self.response.write("create_closing OK.")
+            
+        except Exception, ex:
+            self.response.write("create_closing failed. %s" % str(ex))
         
         self.response.write("<br />")
