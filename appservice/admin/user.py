@@ -49,5 +49,5 @@ class UserAppService():
             raise Exception("You must enter an User Name.")
         
     def validate_level(self, vm):
-        if vm.account_type < 1 or vm.account_type > 5:
+        if vm.level < 1 or vm.level > 5:
             raise Exception("You must enter a valid Level.")
