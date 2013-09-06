@@ -1,3 +1,5 @@
+from datalayer.models.models import Tran
+
 class UserViewModel():
     code = ''
     name = ''
@@ -38,6 +40,8 @@ class TranViewModel():
     tran_code = ''
     tran_date = None
     seq = 0
+    agent_code = ''
+    car_reg_no = ''
     
 class AgentMovementViewModel():
     agent_code = ''
@@ -51,7 +55,7 @@ class AgentMovementViewModel():
         self.bal_amt = round(self.bf_amt + self.deposit_amt - self.top_up_amt, 2)
         
 class BuyViewModel():
-    tran_type = 1
+    tran_type = Tran.TRAN_TYPE_BUY
     tran_code = ''
     tran_date = None
     seq = 0
@@ -83,7 +87,7 @@ class BuyViewModel():
         self.amt = round(self.sub_total - self.comm_amt, 2)
         
 class DepositViewModel():
-    tran_type = 2
+    tran_type = Tran.TRAN_TYPE_DEPOSIT
     tran_code = ''
     tran_date = None
     seq = 0
@@ -101,7 +105,7 @@ class DepositViewModel():
     user_code = ''
     
 class RegisterViewModel():
-    tran_type = 3
+    tran_type = Tran.TRAN_TYPE_REGISTER
     tran_code = ''
     tran_date = None
     seq = 0
@@ -115,7 +119,7 @@ class RegisterViewModel():
     user_code = ''
         
 class TopUpViewModel():
-    tran_type = 4
+    tran_type = Tran.TRAN_TYPE_TOP_UP
     tran_code = ''
     tran_date = None
     seq = 0

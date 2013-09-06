@@ -94,6 +94,19 @@ class Tran(ndb.Model):
     tran_code = ndb.StringProperty(required=True)
     tran_date = ndb.DateTimeProperty()
     seq = ndb.IntegerProperty()
+    
+    # to easy filter by agent and car reg no.
+    agent_code = ndb.StringProperty()
+    car_reg_no = ndb.StringProperty()
+    
+    TRAN_TYPE_BUY = 1
+    TRAN_TYPE_DEPOSIT = 2
+    TRAN_TYPE_REGISTER = 3
+    TRAN_TYPE_TOP_UP = 4
+    
+    @staticmethod
+    def get_tran_type():
+        return (Tran.TRAN_TYPE_BUY, 'Buy'), (Tran.TRAN_TYPE_DEPOSIT, 'Deposit'), (Tran.TRAN_TYPE_REGISTER, 'Register'), (Tran.TRAN_TYPE_TOP_UP, 'Top Up')
 
 class AgentMovement(ndb.Model):
     agent_code = ndb.StringProperty(required=True)
@@ -133,8 +146,9 @@ class Buy(ndb.Model):
     remark = ndb.StringProperty()
     last_modified = ndb.StringProperty()
     
-    def get_tran_code(self):
-        return "BUY%04d" % self.seq
+    @staticmethod
+    def get_tran_code(seq):
+        return "BUY%04d" % seq
     
     @staticmethod
     def get_payment_type():
@@ -169,8 +183,9 @@ class Deposit(ndb.Model):
     remark = ndb.StringProperty()
     last_modified = ndb.StringProperty()
     
-    def get_tran_code(self):
-        return "DEP%04d" % self.seq
+    @staticmethod
+    def get_tran_code(seq):
+        return "DEP%04d" % seq
     
 class Register(ndb.Model):
     tran_code = ndb.StringProperty(required=True)
@@ -191,8 +206,9 @@ class Register(ndb.Model):
     remark = ndb.StringProperty()
     last_modified = ndb.StringProperty()
     
-    def get_tran_code(self):
-        return "REG%04d" % self.seq
+    @staticmethod
+    def get_tran_code(seq):
+        return "REG%04d" % seq
     
 class TopUp(ndb.Model):
     tran_code = ndb.StringProperty(required=True)
@@ -216,5 +232,6 @@ class TopUp(ndb.Model):
     remark = ndb.StringProperty()
     last_modified = ndb.StringProperty()
     
-    def get_tran_code(self):
-        return "TOP%04d" % self.seq
+    @staticmethod
+    def get_tran_code(seq):
+        return "TOP%04d" % seq

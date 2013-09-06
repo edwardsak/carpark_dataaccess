@@ -1,12 +1,12 @@
 from datalayer.models.models import AgentAuditTrail
 
-from datetime import datetime 
+from sharelib.utils import DateTime
 
 class AgentAuditTrailDataAccess():
     def create(self, code, action, message):
         audit = AgentAuditTrail()
-        audit.user_id = code
-        audit.date = datetime.now()
+        audit.agent_code = code
+        audit.date = DateTime.malaysia_now()
         audit.action = action
         audit.message = message
         audit.put()

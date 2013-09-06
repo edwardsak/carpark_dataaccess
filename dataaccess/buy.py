@@ -1,4 +1,4 @@
-from datalayer.models.models import Buy
+from datalayer.models.models import Buy, Agent
 from datalayer.viewmodels.viewmodels import TranViewModel
 from datalayer.dataaccess.master import MasterDataAccess
 from datalayer.dataaccess.tran import TranDataAccess
@@ -7,15 +7,19 @@ from sharelib.utils import DateTime
 from google.appengine.ext import ndb
 
 class BuyDataAccess():
-    def get_key(self, key):
-        return ndb.Key('Buy', key)
-    
-    def get(self, agent_code):
-        q = Buy.query(ancestor=self.get_key(agent_code))
+    def fetch(self, agent_code):
+        q = Buy.query(ancestor=ndb.Key('Agent', agent_code))
         buys = q.fetch()
         return buys
         
     def create(self, buy_obj):
+        # get agent
+        agent = Agent.query(Agent.code==buy_obj.agent_code).get()
+        if agent is None:
+            raise Exception('Agent not found.')
+        
+        buy_obj.agent = agent
+        
         self.__create(buy_obj)
     
     @ndb.transactional(xg=True)
@@ -27,10 +31,13 @@ class BuyDataAccess():
         master.put()
         
         # insert buy
-        buy = Buy(parent=self.get_key(buy_obj.agent_code))
+        tran_code = Buy.get_tran_code(master.seq)
+        
+        buy = Buy(parent=ndb.Key('Agent', buy_obj.agent_code), id=tran_code)
+        buy.tran_code = tran_code
+        buy.tran_type = buy_obj.tran_type
         buy.tran_date = buy_obj.tran_date
         buy.seq = master.seq
-        buy.tran_code = buy.get_tran_code()
         buy.agent_code = buy_obj.agent_code
         buy.agent = buy_obj.agent.key
         buy.remark = buy_obj.remark
@@ -57,7 +64,7 @@ class BuyDataAccess():
         buy.void_by = ''
         buy.void_date = None
         buy.void = False
-        buy.last_modified = str(buy.create_date)
+        buy.last_modified = str(buy.created_date)
         buy.put()
         
         # insert tran
@@ -65,6 +72,7 @@ class BuyDataAccess():
         tran_obj.tran_code = buy.tran_code
         tran_obj.tran_date = buy.tran_date
         tran_obj.tran_type = buy.tran_type
+        tran_obj.agent_code = buy.agent_code
         
         tran_da = TranDataAccess()
         tran_da.create(tran_obj)

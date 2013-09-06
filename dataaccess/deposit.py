@@ -8,11 +8,8 @@ from sharelib.utils import DateTime
 from google.appengine.ext import ndb
 
 class DepositDataAccess():
-    def get_key(self, key):
-        return ndb.Key('Deposit', key)
-    
-    def get(self, agent_code):
-        q = Deposit.query(ancestor=self.get_key(agent_code))
+    def fetch(self, agent_code):
+        q = Deposit.query(ancestor=ndb.Key('Agent', agent_code))
         datas = q.fetch()
         return datas
         
@@ -28,10 +25,12 @@ class DepositDataAccess():
         master.put()
         
         # insert deposit
-        data = Deposit(parent=self.get_key(vm.agent_code))
+        tran_code = Deposit.get_tran_code(master.seq)
+        
+        data = Deposit(parent=ndb.Key('Agent', vm.agent_code), id=tran_code)
         data.tran_date = vm.tran_date
         data.seq = master.seq
-        data.tran_code = data.get_tran_code()
+        data.tran_code = tran_code
         data.agent_code = vm.agent_code
         data.agent = vm.agent.key
         data.remark = vm.remark
@@ -63,6 +62,7 @@ class DepositDataAccess():
         tran_obj.tran_code = data.tran_code
         tran_obj.tran_date = data.tran_date
         tran_obj.tran_type = data.tran_type
+        tran_obj.agent_code = data.agent_code
         
         tran_da = TranDataAccess()
         tran_da.create(tran_obj)
@@ -73,3 +73,11 @@ class DepositDataAccess():
         agent.bal_amt += vm.amt
         agent.bal_amt = round(agent.bal_amt, 2)
         agent.put()
+        
+    def verify(self, vm):
+        self.__verify(vm)
+
+    @ndb.transactional(xg=True)        
+    def __verify(self, vm):
+        # get deposit
+        pass

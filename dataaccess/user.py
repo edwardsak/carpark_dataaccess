@@ -4,11 +4,8 @@ from sharelib.utils import DateTime
 from google.appengine.ext import ndb
 
 class UserDataAccess():
-    def get_key(self, key):
-        return ndb.Key('User', key)
-    
     def get(self, code):
-        return User.query(ancestor=self.get_key(code)).get()
+        return User.query(ancestor=ndb.Key('User', code)).get()
     
     def create(self, vm):
         self.__create(vm)
@@ -20,7 +17,7 @@ class UserDataAccess():
         if data_validate != None:
             raise Exception('User ID already exist.')
         
-        data = User(parent=self.get_key(vm.code))
+        data = User(parent=ndb.Key('User', vm.code), id=vm.code)
         data.code = vm.code
         data.name = vm.name
         data.pwd = vm.pwd

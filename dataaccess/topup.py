@@ -8,11 +8,8 @@ from sharelib.utils import DateTime
 from google.appengine.ext import ndb
 
 class TopUpDataAccess():
-    def get_key(self, key):
-        return ndb.Key('TopUp', key)
-    
-    def get(self, agent_code):
-        q = TopUp.query(ancestor=self.get_key(agent_code))
+    def fetch(self, agent_code):
+        q = TopUp.query(ancestor=ndb.Key('Agent', agent_code))
         datas = q.fetch()
         return datas
         
@@ -28,10 +25,12 @@ class TopUpDataAccess():
         master.put()
         
         # insert deposit
-        data = TopUp(parent=self.get_key(vm.agent_code))
+        tran_code = TopUp.get_tran_code(master.seq)
+        
+        data = TopUp(parent=ndb.Key('Agent', vm.agent_code), id=tran_code)
         data.tran_date = vm.tran_date
         data.seq = master.seq
-        data.tran_code = data.get_tran_code()
+        data.tran_code = tran_code
         data.agent_code = vm.agent_code
         data.agent = vm.agent.key
         data.remark = vm.remark
@@ -57,6 +56,8 @@ class TopUpDataAccess():
         tran_obj.tran_code = data.tran_code
         tran_obj.tran_date = data.tran_date
         tran_obj.tran_type = data.tran_type
+        tran_obj.agent_code = data.agent_code
+        tran_obj.car_reg_no = data.car_reg_no
         
         tran_da = TranDataAccess()
         tran_da.create(tran_obj)

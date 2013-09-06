@@ -1,6 +1,8 @@
 from datalayer.dataaccess.user import UserDataAccess
 from datalayer.dataaccess.useraudittrail import UserAuditTrailDataAccess
 
+import re
+
 class UserAppService():
     def create(self, vm):
         try:
@@ -43,6 +45,11 @@ class UserAppService():
     def validate_code(self, vm):
         if vm.code == None or len(vm.code) < 1:
             raise Exception("You must enter an User ID.")
+        
+        # cannot has space, symbol, unicode
+        pattern = re.compile(r'[./\?!@#$%]')
+        if pattern.findall(vm.code):
+            raise Exception("User ID cannot has symbols.")
         
     def validate_name(self, vm):
         if vm.name == None or len(vm.name) < 1:

@@ -4,11 +4,8 @@ from sharelib.utils import DateTime
 from google.appengine.ext import ndb
 
 class AgentDataAccess():
-    def get_key(self, key):
-        return ndb.Key('Agent', key)
-    
     def get(self, code):
-        return Agent.query(ancestor=self.get_key(code)).get()
+        return Agent.query(ancestor=ndb.Key('Agent', code)).get()
     
     def create(self, vm):
         self.__create(vm)
@@ -20,7 +17,7 @@ class AgentDataAccess():
         if data_validate != None:
             raise Exception('Agent ID already exist.')
         
-        data = Agent(parent=self.get_key(vm.code))
+        data = Agent(parent=ndb.Key('Agent', vm.code), id=vm.code)
         data.code = vm.code
         data.name = vm.name
         data.pwd = vm.pwd

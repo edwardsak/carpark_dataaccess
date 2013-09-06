@@ -39,7 +39,7 @@ class BuyAppService():
         
         closing = Closing.query().get()
             
-        if DateTime.date_diff('day', closing.closing_date, vm.tran_date) < 0:
+        if DateTime.date_diff('day', closing.closing_date, vm.tran_date) <= 0:
             raise Exception('You cannot create/modify this transaction because already closed.')
             
     def __validate_agent_code(self, vm):
