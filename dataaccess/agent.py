@@ -26,6 +26,8 @@ class AgentDataAccess():
         data.tel = vm.tel
         data.hp = vm.hp
         data.email = vm.email
+        data.comm_per = vm.comm_per
+        data.bal_amt = vm.bal_amt
         data.active = vm.active
         data.last_modified = str(DateTime.malaysia_now())
         data.put()
@@ -51,6 +53,7 @@ class AgentDataAccess():
         data.tel = vm.tel
         data.hp = vm.hp
         data.email = vm.email
+        data.comm_per = vm.comm_per
         data.active = vm.active
         data.last_modified = str(DateTime.malaysia_now())
         data.put()

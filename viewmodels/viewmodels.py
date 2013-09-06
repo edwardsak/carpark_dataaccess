@@ -70,6 +70,8 @@ class BuyViewModel():
     payment_date = None
     payment_type = 0
     payment_ref_no = ''
+    payment_file_name = ''
+    payment_url = ''
     verified_by = ''
     verify_status = 0
     void = False
@@ -97,6 +99,8 @@ class DepositViewModel():
     payment_date = None
     payment_type = 0
     payment_ref_no = ''
+    payment_file_name = ''
+    payment_url = ''
     verified_by = ''
     verify_status = 0
     void = False

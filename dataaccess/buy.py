@@ -52,6 +52,8 @@ class BuyDataAccess():
         buy.payment_date = buy_obj.payment_date
         buy.payment_type = buy_obj.payment_type
         buy.payment_ref_no = buy_obj.payment_ref_no
+        buy.payment_file_name = buy_obj.payment_file_name
+        buy.payment_url = buy_obj.payment_url
         
         buy.verified_by = ''
         buy.verified_date = None

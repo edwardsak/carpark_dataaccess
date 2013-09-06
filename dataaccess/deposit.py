@@ -1,4 +1,4 @@
-from datalayer.models.models import Deposit
+from datalayer.models.models import Deposit, Agent
 from datalayer.viewmodels.viewmodels import TranViewModel
 from datalayer.dataaccess.master import MasterDataAccess
 from datalayer.dataaccess.tran import TranDataAccess
@@ -14,6 +14,13 @@ class DepositDataAccess():
         return datas
         
     def create(self, vm):
+        # get agent
+        agent = Agent.query(Agent.code==vm.agent_code).get()
+        if agent is None:
+            raise Exception('Agent not found.')
+        
+        vm.agent = agent
+        
         self.__create(vm)
     
     @ndb.transactional(xg=True)
@@ -28,9 +35,10 @@ class DepositDataAccess():
         tran_code = Deposit.get_tran_code(master.seq)
         
         data = Deposit(parent=ndb.Key('Agent', vm.agent_code), id=tran_code)
+        data.tran_code = tran_code
+        data.tran_type = vm.tran_type
         data.tran_date = vm.tran_date
         data.seq = master.seq
-        data.tran_code = tran_code
         data.agent_code = vm.agent_code
         data.agent = vm.agent.key
         data.remark = vm.remark
@@ -54,7 +62,7 @@ class DepositDataAccess():
         data.void_by = ''
         data.void_date = None
         data.void = False
-        data.last_modified = str(data.create_date)
+        data.last_modified = str(data.created_date)
         data.put()
         
         # insert tran

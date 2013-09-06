@@ -1,10 +1,11 @@
-from datalayer.viewmodels.viewmodels import UserViewModel, AgentViewModel, BuyViewModel
+from datalayer.viewmodels.viewmodels import UserViewModel, AgentViewModel, BuyViewModel, DepositViewModel
 from datalayer.appservice.admin.user import UserAppService
 from datalayer.appservice.admin.agent import AgentAppService
 from datalayer.appservice.admin.account import AccountAppService
 from datalayer.appservice.admin.systemsetting import SystemSettingAppService
 from datalayer.appservice.admin.closing import ClosingAppService
 from datalayer.appservice.agent.buy import BuyAppService
+from datalayer.appservice.agent.deposit import DepositAppService
 from datalayer.models.models import User, Agent, SystemSetting, Closing
 from sharelib.object import Object
 from sharelib.utils import DateTime
@@ -26,6 +27,7 @@ class Test(webapp2.RequestHandler):
         self.update_agent()
         
         self.create_buy()
+        self.create_deposit()
     
     def create_user(self):
         try:
@@ -168,7 +170,6 @@ class Test(webapp2.RequestHandler):
             vm = BuyViewModel()
             vm.tran_date = DateTime.malaysia_today()
             vm.agent_code = '1'
-            vm.user_code = '1'
             vm.qty = 10
             vm.unit_price = 10
             vm.comm_per = 5
@@ -176,7 +177,7 @@ class Test(webapp2.RequestHandler):
             vm.cal_comm_amt()
             vm.payment_date = vm.tran_date
             vm.payment_type = 1
-            vm.payment_ref_no = '1234'
+            vm.payment_ref_no = '1'
             vm.cal_amt()
             
             app_service = BuyAppService()
@@ -186,5 +187,25 @@ class Test(webapp2.RequestHandler):
             
         except Exception, ex:
             self.response.write("create_buy failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def create_deposit(self):
+        try:
+            vm = DepositViewModel()
+            vm.tran_date = DateTime.malaysia_today()
+            vm.agent_code = '1'
+            vm.amt = 100
+            vm.payment_date = vm.tran_date
+            vm.payment_type = 1
+            vm.payment_ref_no = '2'
+            
+            app_service = DepositAppService()
+            app_service.create(vm)
+            
+            self.response.write("create_deposit OK.")
+            
+        except Exception, ex:
+            self.response.write("create_deposit failed. %s" % str(ex))
         
         self.response.write("<br />")
