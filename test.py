@@ -1,4 +1,4 @@
-from datalayer.viewmodels.viewmodels import UserViewModel, AgentViewModel, BuyViewModel, DepositViewModel
+from datalayer.viewmodels.viewmodels import UserViewModel, AgentViewModel, BuyViewModel, DepositViewModel, RegisterViewModel, TopUpViewModel
 from datalayer.appservice.admin.user import UserAppService
 from datalayer.appservice.admin.agent import AgentAppService
 from datalayer.appservice.admin.account import AccountAppService
@@ -6,6 +6,8 @@ from datalayer.appservice.admin.systemsetting import SystemSettingAppService
 from datalayer.appservice.admin.closing import ClosingAppService
 from datalayer.appservice.agent.buy import BuyAppService
 from datalayer.appservice.agent.deposit import DepositAppService
+from datalayer.appservice.agent.register import RegisterAppService
+from datalayer.appservice.agent.topup import TopUpAppService
 from datalayer.models.models import User, Agent, SystemSetting, Closing
 from sharelib.object import Object
 from sharelib.utils import DateTime
@@ -28,6 +30,8 @@ class Test(webapp2.RequestHandler):
         
         self.create_buy()
         self.create_deposit()
+        self.create_register()
+        self.create_top_up()
     
     def create_user(self):
         try:
@@ -207,5 +211,50 @@ class Test(webapp2.RequestHandler):
             
         except Exception, ex:
             self.response.write("create_deposit failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def create_register(self):
+        try:
+            vm = RegisterViewModel()
+            vm.tran_date = DateTime.malaysia_today()
+            vm.agent_code = '1'
+            vm.car_reg_no = 'WKG4952'
+            vm.car_name = 'Edward'
+            vm.car_ic = '1234'
+            vm.car_address = 'TB'
+            vm.car_tel = '1'
+            vm.car_hp = '2'
+            vm.car_email = '3'
+            vm.tag_code = 'XYZ'
+            
+            app_service = RegisterAppService()
+            app_service.create(vm)
+            
+            self.response.write("create_register OK.")
+            
+        except Exception, ex:
+            self.response.write("create_register failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def create_top_up(self):
+        try:
+            vm = TopUpViewModel()
+            vm.tran_date = DateTime.malaysia_today()
+            vm.agent_code = '1'
+            vm.car_reg_no = 'WKG4952'
+            vm.sub_total = 20
+            vm.comm_per = 5
+            vm.cal_comm_amt()
+            vm.cal_amt()
+            
+            app_service = TopUpAppService()
+            app_service.create(vm)
+            
+            self.response.write("create_top_up OK.")
+            
+        except Exception, ex:
+            self.response.write("create_top_up failed. %s" % str(ex))
         
         self.response.write("<br />")

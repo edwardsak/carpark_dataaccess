@@ -1,8 +1,9 @@
-from datalayer.models.models import TopUp
+from datalayer.models.models import TopUp, Agent, Car
 from datalayer.viewmodels.viewmodels import TranViewModel
 from datalayer.dataaccess.master import MasterDataAccess
 from datalayer.dataaccess.tran import TranDataAccess
 from datalayer.dataaccess.agent import AgentDataAccess
+from datalayer.dataaccess.car import CarDataAccess
 from sharelib.utils import DateTime
 
 from google.appengine.ext import ndb
@@ -14,6 +15,20 @@ class TopUpDataAccess():
         return datas
         
     def create(self, vm):
+        # get agent
+        agent = Agent.query(Agent.code==vm.agent_code).get()
+        if agent is None:
+            raise Exception('Agent not found.')
+        
+        vm.agent = agent
+        
+        # get car
+        car = Car.query(Car.reg_no==vm.car_reg_no).get()
+        if car is None:
+            raise Exception('Car not found.')
+        
+        vm.car = car
+        
         self.__create(vm)
     
     @ndb.transactional(xg=True)
@@ -28,14 +43,16 @@ class TopUpDataAccess():
         tran_code = TopUp.get_tran_code(master.seq)
         
         data = TopUp(parent=ndb.Key('Agent', vm.agent_code), id=tran_code)
+        data.tran_code = tran_code
+        data.tran_type = vm.tran_type
         data.tran_date = vm.tran_date
         data.seq = master.seq
-        data.tran_code = tran_code
         data.agent_code = vm.agent_code
         data.agent = vm.agent.key
         data.remark = vm.remark
         
         data.car_reg_no = vm.car_reg_no
+        data.car = vm.car.key
         data.sub_total = vm.sub_total
         data.comm_per = vm.comm_per
         data.comm_amt = vm.comm_amt
@@ -48,7 +65,7 @@ class TopUpDataAccess():
         data.void_by = ''
         data.void_date = None
         data.void = False
-        data.last_modified = str(data.create_date)
+        data.last_modified = str(data.created_date)
         data.put()
         
         # insert tran
@@ -72,3 +89,10 @@ class TopUpDataAccess():
             raise Exception('You have no more Balance.')
         
         agent.put()
+        
+        # update car bal amt
+        car_da = CarDataAccess()
+        car = car_da.get(vm.car_reg_no)
+        car.bal_amt += vm.sub_total
+        car.bal_amt = round(car.bal_amt, 2)
+        car.put()

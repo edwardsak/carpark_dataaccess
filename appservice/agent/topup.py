@@ -9,7 +9,11 @@ class TopUpAppService():
             self.__validate_tran_date(vm)
             self.__validate_agent_code(vm)
             self.__validate_car_reg_no(vm)
-            self.__validate_amt(vm)
+            self.__validate_sub_total(vm)
+            
+            # calculate amt
+            vm.cal_comm_amt()
+            vm.cal_amt()
             
             da = TopUpDataAccess()
             da.create(vm)
@@ -39,6 +43,6 @@ class TopUpAppService():
         if vm.car_reg_no == None or len(vm.car_reg_no) < 1:
             raise Exception("You must enter an Car Reg. No.")
         
-    def __validate_amt(self, vm):
-        if vm.amt < 1:
+    def __validate_sub_total(self, vm):
+        if vm.sub_total <= 0:
             raise Exception("You must enter a valid Amount.")

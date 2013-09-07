@@ -9,7 +9,7 @@ class RegisterAppService():
             self.__validate_tran_date(vm)
             self.__validate_agent_code(vm)
             self.__validate_car_reg_no(vm)
-            self.__validate_tag_no(vm)
+            self.__validate_tag_code(vm)
             
             da = RegisterDataAccess()
             da.create(vm)
@@ -39,6 +39,6 @@ class RegisterAppService():
         if vm.car_reg_no == None or len(vm.car_reg_no) < 1:
             raise Exception("You must enter an Car Reg. No.")
         
-    def __validate_tag_no(self, vm):
-        if vm.tag_no == None or len(vm.tag_no) < 1:
+    def __validate_tag_code(self, vm):
+        if vm.tag_code == None or len(vm.tag_code) < 1:
             raise Exception("You must enter an Tag No.")
