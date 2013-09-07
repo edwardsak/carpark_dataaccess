@@ -11,15 +11,12 @@ class AgentAppService():
             da.update(vm)
             
         except Exception as ex:
-            # audit trail, fail
             audit_da = AgentAuditTrailDataAccess()
-            audit_da.create(vm.agent_code, 'Update Agent', 'Fail. Error=%s' % str(ex))
-            
+            audit_da.create(vm.code, 'Update Agent', 'Fail. Error=%s' % str(ex))
             raise ex
         
-        # audit trail, ok
         audit_da = AgentAuditTrailDataAccess()
-        audit_da.create(vm.agent_code, 'Update Agent', 'Ok.')
+        audit_da.create(vm.code, 'Update Agent', 'Ok.')
         
     def valiate(self, vm):
         if len(vm.code) == 0:
@@ -29,27 +26,20 @@ class AgentAppService():
             raise Exception('You must enter a Name.')
         
     def login(self, vm):
-        q = Agent.query(Agent.code==vm.code, Agent.pwd==vm.pwd)
-        obj = q.get()
-            
-        if obj is None:
-            raise Exception('Invalid ID or Password.')
-        
-    def reset_pwd(self, vm):
         try:
-            da = AgentDataAccess()
-            da.reset_pwd(vm)
+            q = Agent.query(Agent.code==vm.code, Agent.pwd==vm.pwd)
+            obj = q.get()
+                
+            if obj is None:
+                raise Exception('Invalid ID or Password.')
             
         except Exception as ex:
-            # audit trail, fail
             audit_da = AgentAuditTrailDataAccess()
-            audit_da.create(vm.agent_code, 'Reset Agent Password', 'Fail. Error=%s' % str(ex))
-            
+            audit_da.create(vm.code, 'Agent login', 'Fail. Error=%s' % str(ex))
             raise ex
         
-        # audit trail, ok
         audit_da = AgentAuditTrailDataAccess()
-        audit_da.create(vm.agent_code, 'Reset Agent Password', 'Ok.')
+        audit_da.create(vm.code, 'Agent login', 'Ok.')
         
     def change_pwd(self, vm):
         try:
@@ -57,12 +47,9 @@ class AgentAppService():
             da.change_pwd(vm)
             
         except Exception as ex:
-            # audit trail, fail
             audit_da = AgentAuditTrailDataAccess()
-            audit_da.create(vm.agent_code, 'Change Agent Password', 'Fail. Error=%s' % str(ex))
-            
+            audit_da.create(vm.code, 'Change Agent Password', 'Fail. Error=%s' % str(ex))
             raise ex
         
-        # audit trail, ok
         audit_da = AgentAuditTrailDataAccess()
-        audit_da.create(vm.agent_code, 'Change Agent Password', 'Ok.')
+        audit_da.create(vm.code, 'Change Agent Password', 'Ok.')
