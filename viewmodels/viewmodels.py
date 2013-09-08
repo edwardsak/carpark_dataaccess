@@ -177,3 +177,55 @@ class TopUpViewModel():
         
     def cal_amt(self):
         self.amt = round(self.sub_total - self.comm_amt, 2)
+        
+class ChargeViewModel():
+    # view editable
+    tran_date = None
+    attendant_code = ''
+    lot_no = ''
+    car_reg_no = ''
+    void = False
+    remark = ''
+    last_modified = ''
+    user_code = ''
+    
+    # model editable
+    tran_type = Tran.TRAN_TYPE_CHARGE
+    tran_code = ''
+    seq = 0
+    attendant = None
+    car = None
+    start_time = None
+    charge_time = None
+    duration = 0
+    sub_total = 0
+    comm_per = 0
+    comm_amt = 0
+    amt = 0
+    
+    def idle_duration(self):
+        td = self.charge_time - self.last_charge_time
+        return td.total_seconds() / 3600
+    
+    def cal_duration(self):
+        td = self.charge_time - self.start_time
+        self.duration = td.total_seconds() / 3600
+        
+    def cal_sub_total(self):
+        amt = 0
+        duration = self.duration
+        
+        if duration >= 0:
+            amt = 0.21
+        
+        duration -= 1
+        if duration > 0:
+            amt += (int(duration) + 1) * 0.42
+            
+        self.sub_total = amt
+    
+    def cal_comm_amt(self):
+        self.comm_amt = round(self.sub_total * self.comm_per / 100, 2)
+        
+    def cal_amt(self):
+        self.amt = round(self.sub_total - self.comm_amt, 2)

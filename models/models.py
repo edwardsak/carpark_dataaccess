@@ -72,7 +72,7 @@ class Car(ndb.Model):
     ic = ndb.StringProperty()
     address = ndb.StringProperty()
     tel = ndb.StringProperty()
-    hp = ndb.StringProperty(required=True)
+    hp = ndb.StringProperty()
     email = ndb.StringProperty()
     bal_amt = ndb.FloatProperty()
     active = ndb.BooleanProperty()
@@ -116,10 +116,17 @@ class Tran(ndb.Model):
     TRAN_TYPE_DEPOSIT = 2
     TRAN_TYPE_REGISTER = 3
     TRAN_TYPE_TOP_UP = 4
+    TRAN_TYPE_CHARGE = 5
     
     @staticmethod
     def get_tran_type():
-        return (Tran.TRAN_TYPE_BUY, 'Buy'), (Tran.TRAN_TYPE_DEPOSIT, 'Deposit'), (Tran.TRAN_TYPE_REGISTER, 'Register'), (Tran.TRAN_TYPE_TOP_UP, 'Top Up')
+        return (
+                (Tran.TRAN_TYPE_BUY, 'Buy'), 
+                (Tran.TRAN_TYPE_DEPOSIT, 'Deposit'), 
+                (Tran.TRAN_TYPE_REGISTER, 'Register'), 
+                (Tran.TRAN_TYPE_TOP_UP, 'Top Up'), 
+                (Tran.TRAN_TYPE_CHARGE, 'Charge')
+                )
 
 class AgentMovement(ndb.Model):
     agent_code = ndb.StringProperty(required=True)
@@ -314,3 +321,35 @@ class TopUp(ndb.Model):
     @staticmethod
     def get_tran_code(seq):
         return "TOP%04d" % seq
+    
+class Charge(ndb.Model):
+    tran_code = ndb.StringProperty(required=True)
+    tran_type = ndb.IntegerProperty()
+    tran_date = ndb.DateTimeProperty()
+    seq = ndb.IntegerProperty()
+    attendant_code = ndb.StringProperty(required=True)
+    attendant = ndb.KeyProperty(kind=Attendant)
+    car_reg_no = ndb.StringProperty(required=True)
+    car = ndb.KeyProperty(kind=Car)
+    lot_no = ndb.StringProperty()
+    start_time = ndb.DateTimeProperty()
+    end_time = ndb.DateTimeProperty()
+    duration = ndb.IntegerProperty()
+    sub_total = ndb.FloatProperty()
+    comm_per = ndb.FloatProperty()
+    comm_amt = ndb.FloatProperty()
+    amt = ndb.FloatProperty()
+    ended = ndb.BooleanProperty()
+    created_by = ndb.StringProperty()
+    created_date = ndb.DateTimeProperty()
+    modified_by = ndb.StringProperty()
+    modified_date = ndb.DateTimeProperty()
+    void_by = ndb.StringProperty()
+    void_date = ndb.DateTimeProperty()
+    void = ndb.BooleanProperty()
+    remark = ndb.StringProperty()
+    last_modified = ndb.StringProperty()
+    
+    @staticmethod
+    def get_tran_code(seq):
+        return "CHR%04d" % seq

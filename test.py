@@ -1,14 +1,18 @@
-from datalayer.viewmodels.viewmodels import UserViewModel, AgentViewModel, BuyViewModel, DepositViewModel, RegisterViewModel, TopUpViewModel
+from datalayer.viewmodels.viewmodels import UserViewModel, AgentViewModel, AttendantViewModel, BuyViewModel, DepositViewModel, RegisterViewModel, TopUpViewModel, ChargeViewModel
 from datalayer.appservice.admin.user import UserAppService
 from datalayer.appservice.admin.agent import AgentAppService
-from datalayer.appservice.admin.account import AccountAppService
+from datalayer.appservice.admin.attendant import AttendantAppService
+from datalayer.appservice.admin.account import AccountAppService as UserAccountAppService
 from datalayer.appservice.admin.systemsetting import SystemSettingAppService
 from datalayer.appservice.admin.closing import ClosingAppService
+from datalayer.appservice.agent.account import AccountAppService as AgentAccountAppService
 from datalayer.appservice.agent.buy import BuyAppService
 from datalayer.appservice.agent.deposit import DepositAppService
 from datalayer.appservice.agent.register import RegisterAppService
 from datalayer.appservice.agent.topup import TopUpAppService
-from datalayer.models.models import User, Agent, SystemSetting, Closing
+from datalayer.appservice.attendant.account import AccountAppService as AttendantAccountAppService
+from datalayer.appservice.attendant.charge import ChargeAppService
+from datalayer.models.models import User, Agent, Attendant, SystemSetting, Closing
 from sharelib.object import Object
 from sharelib.utils import DateTime
 
@@ -18,6 +22,18 @@ import webapp2
 
 class Test(webapp2.RequestHandler):
     def get(self):
+        self.test1()
+        #self.test2()
+        
+    #def get(self, case_no):
+    #    if case_no == '1':
+    #        self.test1()
+    #    elif case_no == '2':
+    #        self.test1()
+    #    else:
+    #        self.response.write("Test case not found.")
+        
+    def test1(self):
         self.create_system_setting()
         self.create_closing()
         
@@ -27,12 +43,19 @@ class Test(webapp2.RequestHandler):
         
         self.create_agent()
         self.update_agent()
+        self.agent_login()
         
+        self.create_attendant()
+        self.update_attendant()
+        self.attendant_login()
+        
+    def test2(self):
         self.create_buy()
         self.create_deposit()
         self.create_register()
         self.create_top_up()
-    
+        self.create_charge()
+        
     def create_user(self):
         try:
             vm = UserViewModel()
@@ -77,7 +100,7 @@ class Test(webapp2.RequestHandler):
             vm.code = '1'
             vm.pwd = '1'
             
-            app_service = AccountAppService()
+            app_service = UserAccountAppService()
             app_service.login(vm)
             
             self.response.write("user_login OK.")
@@ -124,6 +147,76 @@ class Test(webapp2.RequestHandler):
             
         except Exception, ex:
             self.response.write("update_agent failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def agent_login(self):
+        try:
+            vm = AgentViewModel()
+            vm.code = '1'
+            vm.pwd = '1'
+            
+            app_service = AgentAccountAppService()
+            app_service.login(vm)
+            
+            self.response.write("agent_login OK.")
+        
+        except Exception, ex:
+            self.response.write("agent_login failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def create_attendant(self):
+        try:
+            vm = AttendantViewModel()
+            vm.code = '1'
+            vm.name = '1'
+            vm.pwd = '1'
+            vm.comm_per = 2
+            
+            app_service = AttendantAppService()
+            app_service.create(vm)
+            
+            self.response.write("create_attendant OK.")
+            
+        except Exception, ex:
+            self.response.write("create_attendant failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def update_attendant(self):
+        try:
+            data = Attendant.query(Attendant.code=='1').get()
+            
+            vm = AttendantViewModel()
+            vm.code = '1'
+            vm.name = '2'
+            vm.comm_per = 2
+            vm.last_modified = data.last_modified
+            
+            app_service = AttendantAppService()
+            app_service.update(vm)
+            
+            self.response.write("update_attendant OK.")
+            
+        except Exception, ex:
+            self.response.write("update_attendant failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def attendant_login(self):
+        try:
+            vm = AttendantViewModel()
+            vm.code = '1'
+            vm.pwd = '1'
+            
+            app_service = AttendantAccountAppService()
+            app_service.login(vm)
+            
+            self.response.write("attendant_login OK.")
+        
+        except Exception, ex:
+            self.response.write("attendant_login failed. %s" % str(ex))
         
         self.response.write("<br />")
         
@@ -256,5 +349,23 @@ class Test(webapp2.RequestHandler):
             
         except Exception, ex:
             self.response.write("create_top_up failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def create_charge(self):
+        try:
+            vm = ChargeViewModel()
+            vm.tran_date = DateTime.malaysia_today()
+            vm.attendant_code = '1'
+            vm.car_reg_no = 'WKG4952'
+            vm.comm_per = 2
+            
+            app_service = ChargeAppService()
+            app_service.create(vm)
+            
+            self.response.write("create_charge OK.")
+            
+        except Exception, ex:
+            self.response.write("create_charge failed. %s" % str(ex))
         
         self.response.write("<br />")

@@ -21,7 +21,7 @@ class CarDataAccess():
         data.tel = vm.tel
         data.hp = vm.hp
         data.email = vm.email
-        data.bal_amt = vm.bal_amt
+        data.bal_amt = 0
         data.active = True
         data.last_modified = str(DateTime.malaysia_now())
         data.put()

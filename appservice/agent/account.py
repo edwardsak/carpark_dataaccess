@@ -2,7 +2,7 @@ from datalayer.dataaccess.agent import AgentDataAccess
 from datalayer.dataaccess.agentaudittrail import AgentAuditTrailDataAccess
 from datalayer.models.models import Agent
 
-class AgentAppService():
+class AccountAppService():
     def update(self, vm):
         try:
             self.valiate(vm)

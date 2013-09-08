@@ -21,7 +21,8 @@ class AttendantDataAccess():
         data.code = vm.code
         data.name = vm.name
         data.pwd = vm.pwd
-        data.active = vm.active
+        data.comm_per = vm.comm_per
+        data.active = True
         data.last_modified = str(DateTime.malaysia_now())
         data.put()
         
@@ -41,6 +42,7 @@ class AttendantDataAccess():
             raise Exception('Record has been modified by other user.')
         
         data.name = vm.name
+        data.comm_per = vm.comm_per
         data.active = vm.active
         data.last_modified = str(DateTime.malaysia_now())
         data.put()
