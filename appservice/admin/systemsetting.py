@@ -1,5 +1,4 @@
 from datalayer.dataaccess.systemsetting import SystemSettingDataAccess
-from sharelib.object import Object
 
 class SystemSettingAppService():
     def create(self, vm):

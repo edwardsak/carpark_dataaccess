@@ -55,6 +55,7 @@ class Attendant(ndb.Model):
     code = ndb.StringProperty(required=True)
     name = ndb.StringProperty(required=True)
     pwd = ndb.StringProperty()
+    comm_per = ndb.FloatProperty()
     active = ndb.BooleanProperty()
     last_modified = ndb.StringProperty()
     
@@ -96,6 +97,7 @@ class Closing(ndb.Model):
     
 class SystemSetting(ndb.Model):
     tag_sell_price = ndb.FloatProperty()
+    reset_duration = ndb.FloatProperty()
     user_access_lock = ndb.BooleanProperty()
     agent_access_lock = ndb.BooleanProperty()
     attendant_access_lock = ndb.BooleanProperty()
@@ -333,8 +335,8 @@ class Charge(ndb.Model):
     car = ndb.KeyProperty(kind=Car)
     lot_no = ndb.StringProperty()
     start_time = ndb.DateTimeProperty()
-    end_time = ndb.DateTimeProperty()
-    duration = ndb.IntegerProperty()
+    charge_time = ndb.DateTimeProperty()
+    duration = ndb.FloatProperty()
     sub_total = ndb.FloatProperty()
     comm_per = ndb.FloatProperty()
     comm_amt = ndb.FloatProperty()

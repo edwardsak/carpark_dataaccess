@@ -8,6 +8,10 @@ from sharelib.utils import DateTime
 from google.appengine.ext import ndb
 
 class ChargeDataAccess():
+    def get(self, attendant_code, tran_code):
+        q = Charge.query(ancestor=ndb.Key('Attendant', attendant_code, 'Charge', tran_code))
+        return q.get()
+    
     def fetch(self, attendant_code):
         q = Charge.query(ancestor=ndb.Key('Attendant', attendant_code))
         datas = q.fetch()
@@ -60,7 +64,6 @@ class ChargeDataAccess():
         data.car = vm.car.key
         
         data.start_time = vm.start_time
-        data.last_charge_time = vm.last_charge_time
         data.charge_time = vm.charge_time
         data.duration = vm.duration
         data.sub_total = vm.sub_total
@@ -90,8 +93,28 @@ class ChargeDataAccess():
         tran_da.create(tran_obj)
         
         # update car bal amt
+        self.__update_car_bal_amt(vm.car_reg_no, vm.sub_total)
+        
+    @ndb.transactional(xg=True)
+    def update_charge(self, vm):
+        charge = self.get(vm.attendant_code, vm.tran_code)
+        if charge is None:
+            raise Exception("Charge not found.")
+        
+        old_amt = charge.amt
+        
+        charge.sub_total = vm.sub_total
+        charge.comm_per = vm.comm_per
+        charge.comm_amt = vm.comm_amt
+        charge.amt = vm.amt
+        charge.put()
+        
+        # update car bal amt
+        self.__update_car_bal_amt(vm.car_reg_no, vm.sub_total - old_amt)
+        
+    def __update_car_bal_amt(self, car_reg_no, amt):
         car_da = CarDataAccess()
-        car = car_da.get(vm.car_reg_no)
-        car.bal_amt += vm.amt
+        car = car_da.get(car_reg_no)
+        car.bal_amt -= amt
         car.bal_amt = round(car.bal_amt, 2)
         car.put()

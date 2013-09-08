@@ -13,6 +13,7 @@ class SystemSettingDataAccess():
     def __create(self, vm):
         sys = SystemSetting(parent=ndb.Key('SystemSetting', 'SystemSetting'))
         sys.tag_sell_price = vm.tag_sell_price
+        sys.reset_duration = vm.reset_duration
         sys.user_access_lock = False
         sys.agent_access_lock = False
         sys.attendant_access_lock = False
@@ -23,6 +24,7 @@ class SystemSettingDataAccess():
     def update(self, vm):
         sys = self.get()
         sys.tag_sell_price = vm.tag_sell_price
+        sys.reset_duration = vm.reset_duration
         sys.user_access_lock = vm.user_access_lock
         sys.agent_access_lock = vm.agent_access_lock
         sys.attendant_access_lock = vm.attendant_access_lock

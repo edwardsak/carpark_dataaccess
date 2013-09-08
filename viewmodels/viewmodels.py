@@ -197,6 +197,7 @@ class ChargeViewModel():
     car = None
     start_time = None
     charge_time = None
+    last_charge_time = None
     duration = 0
     sub_total = 0
     comm_per = 0

@@ -21,17 +21,15 @@ import datetime
 import webapp2
 
 class Test(webapp2.RequestHandler):
-    def get(self):
-        self.test1()
-        #self.test2()
-        
-    #def get(self, case_no):
-    #    if case_no == '1':
-    #        self.test1()
-    #    elif case_no == '2':
-    #        self.test1()
-    #    else:
-    #        self.response.write("Test case not found.")
+    def get(self, case_no):
+        if case_no == '1':
+            self.test1()
+        elif case_no == '2':
+            self.test2()
+        elif case_no == '3':
+            self.test3()
+        else:
+            self.response.write("Test case not found.")
         
     def test1(self):
         self.create_system_setting()
@@ -54,6 +52,8 @@ class Test(webapp2.RequestHandler):
         self.create_deposit()
         self.create_register()
         self.create_top_up()
+        
+    def test3(self):
         self.create_charge()
         
     def create_user(self):
@@ -230,6 +230,7 @@ class Test(webapp2.RequestHandler):
             
             vm = Object()
             vm.tag_sell_price = 10
+            vm.reset_duration = 2
             
             app_service = SystemSettingAppService()
             app_service.create(vm)
@@ -357,6 +358,7 @@ class Test(webapp2.RequestHandler):
             vm = ChargeViewModel()
             vm.tran_date = DateTime.malaysia_today()
             vm.attendant_code = '1'
+            vm.lot_no = '1'
             vm.car_reg_no = 'WKG4952'
             vm.comm_per = 2
             

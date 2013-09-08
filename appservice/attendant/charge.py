@@ -42,7 +42,7 @@ class ChargeAppService():
                 # continue old charge
                 vm.tran_code = charge.tran_code
                 vm.start_time = charge.start_time
-                vm.last_charge_time = charge.last_charge_time
+                vm.last_charge_time = charge.charge_time
             
                 # if idle duration > 2hrs, end this charge
                 # and create a new charge
@@ -52,7 +52,7 @@ class ChargeAppService():
                     
                     # create new charge
                     vm.tran_code = ''
-                    vm.start_time = vm.start_time
+                    vm.start_time = vm.charge_time
                     vm.last_charge_time = None
             
             vm.cal_duration()
@@ -67,12 +67,12 @@ class ChargeAppService():
             
         except Exception, ex:
             audit_da = AttendantAuditTrailDataAccess()
-            audit_da.create(vm.agent_code, 'Create Charge', 'Fail. Error=%s' % str(ex))
+            audit_da.create(vm.attendant_code, 'Create Charge', 'Fail. Error=%s' % str(ex))
             raise ex
         
         audit_da = AttendantAuditTrailDataAccess()
-        audit_da.create(vm.agent_code, 'Create Charge', 'Ok.')
-        
+        audit_da.create(vm.attendant_code, 'Create Charge', 'Ok.')
+                
     def __validate_tran_date(self, vm):
         if vm.tran_date is None:
             raise Exception('You must enter a Transaction Date.')
