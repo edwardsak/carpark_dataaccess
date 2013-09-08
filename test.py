@@ -28,6 +28,8 @@ class Test(webapp2.RequestHandler):
             self.test2()
         elif case_no == '3':
             self.test3()
+        elif case_no == '4':
+            self.test4()
         else:
             self.response.write("Test case not found.")
         
@@ -55,6 +57,10 @@ class Test(webapp2.RequestHandler):
         
     def test3(self):
         self.create_charge()
+        
+    def test4(self):
+        self.closing_lock()
+        self.closing_close()
         
     def create_user(self):
         try:
@@ -369,5 +375,35 @@ class Test(webapp2.RequestHandler):
             
         except Exception, ex:
             self.response.write("create_charge failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def closing_lock(self):
+        try:
+            vm = Object()
+            vm.user_code = '1'
+            
+            app_service = ClosingAppService()
+            app_service.lock(vm)
+            
+            self.response.write("closing_lock OK.")
+            
+        except Exception, ex:
+            self.response.write("closing_lock failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def closing_close(self):
+        try:
+            vm = Object()
+            vm.user_code = '1'
+            
+            app_service = ClosingAppService()
+            app_service.close(vm)
+            
+            self.response.write("closing_close OK.")
+            
+        except Exception, ex:
+            self.response.write("closing_close failed. %s" % str(ex))
         
         self.response.write("<br />")

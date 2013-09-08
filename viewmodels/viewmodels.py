@@ -58,6 +58,7 @@ class TranViewModel():
     car_reg_no = ''
     
 class AgentMovementViewModel():
+    movement_code = ''
     agent_code = ''
     movement_date = None
     bf_amt = 0
@@ -67,6 +68,19 @@ class AgentMovementViewModel():
     
     def cal_bal_amt(self):
         self.bal_amt = round(self.bf_amt + self.deposit_amt - self.top_up_amt, 2)
+        
+class CarMovementViewModel():
+    movement_code = ''
+    car_reg_no = ''
+    movement_date = None
+    bf_amt = 0
+    register_amt = 0
+    top_up_amt = 0
+    charge_amt = 0
+    bal_amt = 0
+    
+    def cal_bal_amt(self):
+        self.bal_amt = round(self.bf_amt + self.register_amt + self.top_up_amt - self.charge_amt, 2)
         
 class BuyViewModel():
     # view editable
@@ -151,6 +165,7 @@ class RegisterViewModel():
     seq = 0
     agent = None
     car = None
+    sub_total = 0
         
 class TopUpViewModel():
     # view editable

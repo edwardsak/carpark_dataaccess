@@ -1,6 +1,6 @@
 from datalayer.dataaccess.register import RegisterDataAccess
 from datalayer.dataaccess.agentaudittrail import AgentAuditTrailDataAccess
-from datalayer.models.models import Closing
+from datalayer.models.models import Closing, SystemSetting
 from sharelib.utils import DateTime
 
 class RegisterAppService():
@@ -11,6 +11,10 @@ class RegisterAppService():
             self.__validate_car_reg_no(vm)
             self.__validate_tag_code(vm)
             
+            # get tag sell price
+            system_setting = SystemSetting.query().get()
+            vm.sub_total = system_setting.tag_sell_price
+        
             da = RegisterDataAccess()
             da.create(vm)
             

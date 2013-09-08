@@ -54,7 +54,6 @@ class CarDataAccess():
         
         return data
     
-    
     def save_register(self, vm):
         car = self.get(vm.reg_no)
         if car:

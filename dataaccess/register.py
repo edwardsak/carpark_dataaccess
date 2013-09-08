@@ -1,4 +1,4 @@
-from datalayer.models.models import Register, Agent, Car, SystemSetting
+from datalayer.models.models import Register, Agent, Car
 from datalayer.viewmodels.viewmodels import TranViewModel, CarViewModel, TagViewModel
 from datalayer.dataaccess.master import MasterDataAccess
 from datalayer.dataaccess.tran import TranDataAccess
@@ -22,10 +22,6 @@ class RegisterDataAccess():
         
         vm.agent = agent
         
-        # get systemSetting
-        system_setting = SystemSetting.query().get()
-        vm.amt = system_setting.tag_sell_price
-        
         self.__create(vm)
     
     @ndb.transactional(xg=True)
@@ -39,7 +35,7 @@ class RegisterDataAccess():
         car_vm.tel = vm.car_tel
         car_vm.hp = vm.car_hp
         car_vm.email = vm.car_email
-        car_vm.bal_amt = vm.amt
+        car_vm.bal_amt = vm.sub_total
         
         car_da = CarDataAccess()
         vm.car = car_da.save_register(car_vm)
@@ -79,6 +75,8 @@ class RegisterDataAccess():
         data.car = vm.car.key
         data.tag_code = vm.tag_code
         data.tag = vm.tag.key
+        
+        data.sub_total = vm.sub_total
         
         data.created_by = vm.user_code
         data.created_date = DateTime.malaysia_now()

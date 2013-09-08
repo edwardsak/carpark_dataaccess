@@ -94,6 +94,7 @@ class Master(ndb.Model):
     
 class Closing(ndb.Model):
     closing_date = ndb.DateTimeProperty()
+    audit_lock = ndb.BooleanProperty()
     
 class SystemSetting(ndb.Model):
     tag_sell_price = ndb.FloatProperty()
@@ -131,6 +132,7 @@ class Tran(ndb.Model):
                 )
 
 class AgentMovement(ndb.Model):
+    movement_code = ndb.StringProperty(required=True)
     agent_code = ndb.StringProperty(required=True)
     movement_date = ndb.DateTimeProperty(required=True)
     bf_amt = ndb.FloatProperty()
@@ -138,7 +140,12 @@ class AgentMovement(ndb.Model):
     top_up_amt = ndb.FloatProperty()
     bal_amt = ndb.FloatProperty()
     
+    @staticmethod
+    def get_movement_code(agent_code, movement_date):
+        return "%s|%s" % (agent_code, movement_date.strftime('%Y%m%d'))
+    
 class CarMovement(ndb.Model):
+    movement_code = ndb.StringProperty(required=True)
     car_reg_no = ndb.StringProperty(required=True)
     movement_date = ndb.DateTimeProperty(required=True)
     bf_amt = ndb.FloatProperty()
@@ -146,6 +153,10 @@ class CarMovement(ndb.Model):
     top_up_amt = ndb.FloatProperty()
     charge_amt = ndb.FloatProperty()
     bal_amt = ndb.FloatProperty()
+    
+    @staticmethod
+    def get_movement_code(car_reg_no, movement_date):
+        return "%s|%s" % (car_reg_no, movement_date.strftime('%Y%m%d'))
     
 class Receive(ndb.Model):
     tran_code = ndb.StringProperty(required=True)
@@ -283,6 +294,7 @@ class Register(ndb.Model):
     car = ndb.KeyProperty(kind=Car)
     tag_code = ndb.StringProperty(required=True)
     tag = ndb.KeyProperty(kind=Tag)
+    sub_total = ndb.FloatProperty()
     created_by = ndb.StringProperty()
     created_date = ndb.DateTimeProperty()
     modified_by = ndb.StringProperty()
