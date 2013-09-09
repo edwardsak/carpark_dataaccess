@@ -40,6 +40,7 @@ class CarViewModel():
     name = ''
     ic = ''
     address = ''
+    tel = ''
     hp = ''
     email = ''
     bal_amt = 0
