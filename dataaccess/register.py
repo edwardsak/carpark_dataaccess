@@ -73,6 +73,13 @@ class RegisterDataAccess():
         
         data.car_reg_no = vm.car_reg_no
         data.car = vm.car.key
+        data.car_name = vm.car_name
+        data.car_ic = vm.car_ic
+        data.car_address = vm.car_address
+        data.car_tel = vm.car_tel
+        data.car_hp = vm.car_hp
+        data.car_email = vm.car_email
+        
         data.tag_code = vm.tag_code
         data.tag = vm.tag.key
         
