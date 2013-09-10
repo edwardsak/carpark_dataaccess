@@ -15,12 +15,8 @@ class CarDataAccess():
         
         data = Car(parent=ndb.Key('Car', vm.reg_no), id=vm.reg_no)
         data.reg_no = vm.reg_no
-        data.name = vm.name
-        data.ic = vm.ic
-        data.address = vm.address
-        data.tel = vm.tel
-        data.hp = vm.hp
-        data.email = vm.email
+        data.customer_ic = vm.customer_ic
+        data.customer = vm.customer.key
         data.bal_amt = 0
         data.active = True
         data.last_modified = str(DateTime.malaysia_now())
@@ -42,12 +38,6 @@ class CarDataAccess():
         if data.last_modified != vm.last_modified:
             raise Exception('Record has been modified by other user.')
         
-        data.name = vm.name
-        data.ic = vm.ic
-        data.address = vm.address
-        data.tel = vm.tel
-        data.hp = vm.hp
-        data.email = vm.email
         data.active = vm.active
         data.last_modified = str(DateTime.malaysia_now())
         data.put()

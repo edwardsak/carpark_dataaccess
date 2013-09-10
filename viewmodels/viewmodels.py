@@ -35,20 +35,35 @@ class AttendantViewModel():
     last_modified = ''
     user_code = ''
     
-class CarViewModel():
-    reg_no = ''
-    name = ''
+class CustomerViewModel():
     ic = ''
+    name = ''
     address = ''
     tel = ''
     hp = ''
     email = ''
+    active = True
+    last_modified = ''
+    user_code = ''
+    
+class CarViewModel():
+    reg_no = ''
+    customer_ic = ''
+    customer = None
     bal_amt = 0
+    active = True
+    last_modified = ''
+    user_code = ''
     
 class TagViewModel():
     code = ''
     agent_code = ''
+    agent = None
     car_reg_no = ''
+    car = None
+    active = True
+    last_modified = ''
+    user_code = ''
     
 class TranViewModel():
     tran_type = 0
@@ -148,12 +163,12 @@ class RegisterViewModel():
     tran_date = None
     agent_code = ''
     car_reg_no = ''
-    car_name = ''
-    car_ic = ''
-    car_address = ''
-    car_tel = ''
-    car_hp = ''
-    car_email = ''
+    customer_ic = ''
+    customer_name = ''
+    customer_address = ''
+    customer_tel = ''
+    customer_hp = ''
+    customer_email = ''
     tag_code = ''
     void = False
     remark = ''
@@ -166,6 +181,8 @@ class RegisterViewModel():
     seq = 0
     agent = None
     car = None
+    customer = None
+    tag = None
     sub_total = 0
         
 class TopUpViewModel():

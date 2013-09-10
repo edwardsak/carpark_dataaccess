@@ -1,7 +1,8 @@
-from datalayer.models.models import Register, Agent, Car
-from datalayer.viewmodels.viewmodels import TranViewModel, CarViewModel, TagViewModel
+from datalayer.models.models import Register, Agent
+from datalayer.viewmodels.viewmodels import TranViewModel, CustomerViewModel, CarViewModel, TagViewModel
 from datalayer.dataaccess.master import MasterDataAccess
 from datalayer.dataaccess.tran import TranDataAccess
+from datalayer.dataaccess.customer import CustomerDataAccess
 from datalayer.dataaccess.car import CarDataAccess
 from datalayer.dataaccess.tag import TagDataAccess
 from sharelib.utils import DateTime
@@ -22,6 +23,18 @@ class RegisterDataAccess():
         
         vm.agent = agent
         
+        # save customer
+        customer_vm = CustomerViewModel()
+        customer_vm.ic = vm.customer_ic
+        customer_vm.name = vm.customer_name
+        customer_vm.address = vm.customer_address
+        customer_vm.tel = vm.customer_tel
+        customer_vm.hp = vm.customer_hp
+        customer_vm.email = vm.customer_email
+        
+        customer_da = CustomerDataAccess()
+        vm.customer = customer_da.save_register(customer_vm)
+        
         self.__create(vm)
     
     @ndb.transactional(xg=True)
@@ -29,18 +42,12 @@ class RegisterDataAccess():
         # save car
         car_vm = CarViewModel()
         car_vm.reg_no = vm.car_reg_no
-        car_vm.name = vm.car_name
-        car_vm.ic = vm.car_ic
-        car_vm.address = vm.car_address
-        car_vm.tel = vm.car_tel
-        car_vm.hp = vm.car_hp
-        car_vm.email = vm.car_email
+        car_vm.customer_ic = vm.customer_ic
+        car_vm.customer = vm.customer
         car_vm.bal_amt = vm.sub_total
         
         car_da = CarDataAccess()
         vm.car = car_da.save_register(car_vm)
-        
-        # create customer
         
         # save tag
         tag_vm = TagViewModel()
@@ -73,12 +80,14 @@ class RegisterDataAccess():
         
         data.car_reg_no = vm.car_reg_no
         data.car = vm.car.key
-        data.car_name = vm.car_name
-        data.car_ic = vm.car_ic
-        data.car_address = vm.car_address
-        data.car_tel = vm.car_tel
-        data.car_hp = vm.car_hp
-        data.car_email = vm.car_email
+        
+        data.customer_ic = vm.customer_ic
+        data.customer_name = vm.customer_name
+        data.customer_address = vm.customer_address
+        data.customer_tel = vm.customer_tel
+        data.customer_hp = vm.customer_hp
+        data.customer_email = vm.customer_email
+        data.customer = vm.customer.key
         
         data.tag_code = vm.tag_code
         data.tag = vm.tag.key

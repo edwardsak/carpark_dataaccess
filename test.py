@@ -1,7 +1,9 @@
-from datalayer.viewmodels.viewmodels import UserViewModel, AgentViewModel, AttendantViewModel, BuyViewModel, DepositViewModel, RegisterViewModel, TopUpViewModel, ChargeViewModel
+from datalayer.viewmodels.viewmodels import UserViewModel, AgentViewModel, AttendantViewModel, CustomerViewModel
+from datalayer.viewmodels.viewmodels import BuyViewModel, DepositViewModel, RegisterViewModel, TopUpViewModel, ChargeViewModel
 from datalayer.appservice.admin.user import UserAppService
 from datalayer.appservice.admin.agent import AgentAppService
 from datalayer.appservice.admin.attendant import AttendantAppService
+from datalayer.appservice.admin.customer import CustomerAppService
 from datalayer.appservice.admin.account import AccountAppService as UserAccountAppService
 from datalayer.appservice.admin.systemsetting import SystemSettingAppService
 from datalayer.appservice.admin.closing import ClosingAppService
@@ -12,7 +14,8 @@ from datalayer.appservice.agent.register import RegisterAppService
 from datalayer.appservice.agent.topup import TopUpAppService
 from datalayer.appservice.attendant.account import AccountAppService as AttendantAccountAppService
 from datalayer.appservice.attendant.charge import ChargeAppService
-from datalayer.models.models import User, Agent, Attendant, SystemSetting, Closing
+from datalayer.appservice.customer.account import AccountAppService as CustomerAccountAppService
+from datalayer.models.models import User, Agent, Attendant, Customer, SystemSetting, Closing
 from sharelib.object import Object
 from sharelib.utils import DateTime
 
@@ -48,6 +51,10 @@ class Test(webapp2.RequestHandler):
         self.create_attendant()
         self.update_attendant()
         self.attendant_login()
+        
+        self.create_customer()
+        self.update_customer()
+        self.customer_login()
         
     def test2(self):
         self.create_buy()
@@ -225,6 +232,65 @@ class Test(webapp2.RequestHandler):
             self.response.write("attendant_login failed. %s" % str(ex))
         
         self.response.write("<br />")
+    
+    def create_customer(self):
+        try:
+            vm = CustomerViewModel()
+            vm.ic = '1'
+            vm.name = '1'
+            vm.address = '2'
+            vm.tel = '3'
+            vm.hp = '4'
+            vm.email = '5'
+            
+            app_service = CustomerAppService()
+            app_service.create(vm)
+            
+            self.response.write("create_customer OK.")
+            
+        except Exception, ex:
+            self.response.write("create_customer failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def update_customer(self):
+        try:
+            data = Customer.query(Customer.ic=='1').get()
+            
+            vm = CustomerViewModel()
+            vm.ic = '1'
+            vm.name = '1'
+            vm.address = 'a'
+            vm.tel = '12'
+            vm.hp = '13'
+            vm.email = 'b'
+            vm.last_modified = data.last_modified
+            
+            app_service = CustomerAppService()
+            app_service.update(vm)
+            
+            self.response.write("update_customer OK.")
+            
+        except Exception, ex:
+            self.response.write("update_customer failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def customer_login(self):
+        try:
+            vm = CustomerViewModel()
+            vm.ic = '1'
+            vm.pwd = '1'
+            
+            app_service = CustomerAccountAppService()
+            app_service.login(vm)
+            
+            self.response.write("customer_login OK.")
+        
+        except Exception, ex:
+            self.response.write("customer_login failed. %s" % str(ex))
+        
+        self.response.write("<br />")
         
     def create_system_setting(self):
         try:
@@ -320,12 +386,12 @@ class Test(webapp2.RequestHandler):
             vm.tran_date = DateTime.malaysia_today()
             vm.agent_code = '1'
             vm.car_reg_no = 'WKG4952'
-            vm.car_name = 'Edward'
-            vm.car_ic = '1234'
-            vm.car_address = 'TB'
-            vm.car_tel = '1'
-            vm.car_hp = '2'
-            vm.car_email = '3'
+            vm.customer_name = 'Edward'
+            vm.customer_ic = '1'
+            vm.customer_address = 'TB'
+            vm.customer_tel = '1'
+            vm.customer_hp = '2'
+            vm.customer_email = '3'
             vm.tag_code = 'XYZ'
             
             app_service = RegisterAppService()
