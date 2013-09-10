@@ -2,10 +2,13 @@ from datalayer.models.models import User
 from datalayer.dataaccess.user import UserDataAccess
 from datalayer.dataaccess.useraudittrail import UserAuditTrailDataAccess
 
+from google.appengine.ext import ndb
+
 class AccountAppService():
     def login(self, vm):
         try:
-            q = User.query(User.code==vm.code, User.pwd==vm.pwd)
+            q = User.query(ancestor=ndb.Key(User, vm.code))
+            q = q.filter(User.pwd==vm.pwd)
             obj = q.get()
                 
             if obj is None:

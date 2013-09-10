@@ -12,7 +12,7 @@ class TagDataAccess():
         if data_validate != None:
             raise Exception('Tag ID already exist.')
         
-        data = Tag(parent=ndb.Key('Tag', vm.code), id=vm.code)
+        data = Tag(id=vm.code)
         data.code = vm.code
         data.agent_code = ''
         data.agent = None
@@ -78,7 +78,7 @@ class TagDataAccess():
         if data_validate != None:
             raise Exception('Tag ID already exist.')
         
-        data = Tag(parent=ndb.Key('Tag', vm.code), id=vm.code)
+        data = Tag(id=vm.code)
         data.code = vm.code
         data.agent_code = vm.agent_code
         data.agent = vm.agent.key

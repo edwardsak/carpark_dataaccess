@@ -4,14 +4,14 @@ from google.appengine.ext import ndb
 
 class SystemSettingDataAccess():
     def get(self):
-        return SystemSetting.query(ancestor=ndb.Key('SystemSetting', 'SystemSetting')).get()
+        return SystemSetting.query(ancestor=ndb.Key('SystemSetting', '1')).get()
     
     def create(self, vm):
         self.__create(vm)
     
     @ndb.transactional(xg=True)
     def __create(self, vm):
-        sys = SystemSetting(parent=ndb.Key('SystemSetting', 'SystemSetting'))
+        sys = SystemSetting(id='1')
         sys.tag_sell_price = vm.tag_sell_price
         sys.reset_duration = vm.reset_duration
         sys.user_access_lock = False

@@ -17,7 +17,7 @@ class AttendantDataAccess():
         if data_validate != None:
             raise Exception('Attendant ID already exist.')
         
-        data = Attendant(parent=ndb.Key('Attendant', vm.code), id=vm.code)
+        data = Attendant(id=vm.code)
         data.code = vm.code
         data.name = vm.name
         data.pwd = vm.pwd

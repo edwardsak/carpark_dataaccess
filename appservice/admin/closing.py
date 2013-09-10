@@ -1,9 +1,13 @@
-from datalayer.models.models import Closing, Agent, Car, Buy, Register, Deposit, TopUp, Charge, AgentMovement, CarMovement
+from datalayer.models.models import Agent, Car, Register, Deposit, TopUp, Charge, AgentMovement, CarMovement
 from datalayer.viewmodels.viewmodels import AgentMovementViewModel, CarMovementViewModel
 from datalayer.dataaccess.closing import ClosingDataAccess
 from datalayer.dataaccess.agentmovement import AgentMovementDataAccess
 from datalayer.dataaccess.carmovement import CarMovementDataAccess
 from datalayer.dataaccess.useraudittrail import UserAuditTrailDataAccess
+from datalayer.dataaccess.deposit import DepositDataAccess
+from datalayer.dataaccess.topup import TopUpDataAccess
+from datalayer.dataaccess.register import RegisterDataAccess
+from datalayer.dataaccess.charge import ChargeDataAccess
 
 from datetime import timedelta
 
@@ -45,8 +49,8 @@ class ClosingAppService():
     def close(self, closing_obj):
         try:
             # get current closing date
-            q = Closing.query()
-            closing = q.get()
+            closing_da = ClosingDataAccess()
+            closing = closing_da.get()
             
             # verify is locked
             if closing.audit_lock == False:
@@ -59,7 +63,6 @@ class ClosingAppService():
             self.__close_car_movement(closing.closing_date)
             
             # closing
-            closing_da = ClosingDataAccess()
             closing_da.close()
             
         except Exception as ex:
@@ -79,8 +82,9 @@ class ClosingAppService():
         top_up_agents = self.__sum_agent_top_up(closing_date)
         
         # get bf amt
-        q_bfs = AgentMovement.query(AgentMovement.movement_date==closing_date + timedelta(days=-1))
-        bfs = q_bfs.fetch()
+        mv_da = AgentMovementDataAccess()
+        movement_date = closing_date + timedelta(days=-1)
+        bfs = mv_da.fetch(movement_date)
         
         # group bf by agent code
         bf_agents = {}
@@ -127,7 +131,6 @@ class ClosingAppService():
             bal_obj.cal_bal_amt()
                 
         # delete balance
-        mv_da = AgentMovementDataAccess()
         mv_da.delete(closing_date)
             
         # insert balance
@@ -137,7 +140,11 @@ class ClosingAppService():
     
     def __sum_agent_deposit(self, closing_date):
         # get deposit
-        q2 = Deposit.query(Deposit.tran_date == closing_date)
+        da = DepositDataAccess()
+        key = da.get_key(closing_date)
+        
+        q2 = Deposit.query(ancestor=key)
+        q2 = q2.filter(Deposit.void==False)
         deposits = q2.fetch()
         
         # sum by agent
@@ -159,7 +166,11 @@ class ClosingAppService():
     
     def __sum_agent_top_up(self, closing_date):
         # get topup
-        q2 = TopUp.query(TopUp.tran_date == closing_date)
+        da = TopUpDataAccess()
+        key = da.get_key(closing_date)
+        
+        q2 = TopUp.query(ancestor=key)
+        q2 = q2.filter(TopUp.void==False)
         top_ups = q2.fetch()
         
         # sum by agent
@@ -191,8 +202,9 @@ class ClosingAppService():
         charge_cars = self.__sum_car_charge(closing_date)
         
         # get bf amt
-        q_bfs = CarMovement.query(CarMovement.movement_date==closing_date + timedelta(days=-1))
-        bfs = q_bfs.fetch()
+        mv_da = CarMovementDataAccess()
+        movement_date = closing_date + timedelta(days=-1)
+        bfs = mv_da.fetch(movement_date)
         
         # group bf by car
         bf_cars = {}
@@ -244,7 +256,6 @@ class ClosingAppService():
             bal_obj.cal_bal_amt()
                 
         # delete balance
-        mv_da = CarMovementDataAccess()
         mv_da.delete(closing_date)
             
         # insert balance
@@ -254,7 +265,11 @@ class ClosingAppService():
             
     def __sum_car_register(self, closing_date):
         # get register
-        q2 = Register.query(Deposit.tran_date==closing_date, Deposit.void==False)
+        da = RegisterDataAccess()
+        key = da.get_key(closing_date)
+        
+        q2 = Register.query(ancestor=key)
+        q2 = q2.filter(Register.void==False)
         registers = q2.fetch()
         
         # sum by car
@@ -276,7 +291,11 @@ class ClosingAppService():
     
     def __sum_car_top_up(self, closing_date):
         # get topup
-        q2 = TopUp.query(TopUp.tran_date==closing_date, TopUp.void==False)
+        da = TopUpDataAccess()
+        key = da.get_key(closing_date)
+        
+        q2 = TopUp.query(ancestor=key)
+        q2 = q2.filter(TopUp.void==False)
         top_ups = q2.fetch()
         
         # sum by car
@@ -298,7 +317,11 @@ class ClosingAppService():
     
     def __sum_car_charge(self, closing_date):
         # get charge
-        q2 = Charge.query(Charge.tran_date==closing_date, Charge.void==False)
+        da = ChargeDataAccess()
+        key = da.get_key(closing_date)
+        
+        q2 = Charge.query(ancestor=key)
+        q2 = q2.filter(Charge.void==False)
         charges = q2.fetch()
         
         # sum by car
@@ -322,23 +345,20 @@ class ClosingAppService():
     def revert(self, closing_obj):
         try:
             # get closing
-            q = Closing.query()
-            closing = q.get()
+            closing_da = ClosingDataAccess()
+            closing = closing_da.get()
             
             # verify lock
             if closing.audit_lock == False:
                 raise Exception('You must lock the system before revert.')
             
-            # delete balance
-            q2 = AgentMovement.query(AgentMovement.movement_date >= closing.closing_date + timedelta(days=-1))
-            q2 = q2.filter(AgentMovement.movement_date <= closing.closing_date)
-            bals = q2.fetch()
+            # delete agent balance
+            self.__delete_agent_movement(closing.closing_date)
             
-            for bal in bals:
-                bal.key.delete()
+            # delete car balance
+            self.__delete_car_movement(closing.closing_date)
             
             # update
-            closing_da = ClosingDataAccess()
             closing_da.revert()
             
         except Exception as ex:
@@ -348,3 +368,19 @@ class ClosingAppService():
         
         da = UserAuditTrailDataAccess()
         da.create(closing_obj.user_code, 'Closing', 'Ok.')
+        
+    def __delete_agent_movement(self, closing_date):
+        q = AgentMovement.query(AgentMovement.movement_date >= closing_date + timedelta(days=-1))
+        q = q.filter(AgentMovement.movement_date <= closing_date)
+        bals = q.fetch()
+            
+        for bal in bals:
+            bal.key.delete()
+            
+    def __delete_car_movement(self, closing_date):
+        q = CarMovement.query(CarMovement.movement_date >= closing_date + timedelta(days=-1))
+        q = q.filter(CarMovement.movement_date <= closing_date)
+        bals = q.fetch()
+            
+        for bal in bals:
+            bal.key.delete()

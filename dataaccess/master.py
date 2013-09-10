@@ -8,7 +8,7 @@ class MasterDataAccess():
         master = q.get()
         
         if master is None:
-            master = Master(parent=ndb.Key('Master', kind), id=kind)
+            master = Master(id=kind)
             master.kind = kind
             master.seq = 0
             

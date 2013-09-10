@@ -13,7 +13,7 @@ class CarDataAccess():
         if data_validate != None:
             raise Exception('Car Reg. No. already exist.')
         
-        data = Car(parent=ndb.Key('Car', vm.reg_no), id=vm.reg_no)
+        data = Car(id=vm.reg_no)
         data.reg_no = vm.reg_no
         data.customer_ic = vm.customer_ic
         data.customer = vm.customer.key

@@ -21,6 +21,7 @@ from sharelib.utils import DateTime
 
 import datetime
 
+from google.appengine.ext import ndb
 import webapp2
 
 class Test(webapp2.RequestHandler):
@@ -63,7 +64,23 @@ class Test(webapp2.RequestHandler):
         self.create_top_up()
         
     def test3(self):
+        charge_time = DateTime.malaysia_now()
         self.create_charge()
+        
+        charge_time = charge_time + datetime.timedelta(minutes=61)
+        self.create_charge(charge_time=charge_time)
+        
+        charge_time = charge_time + datetime.timedelta(minutes=61) 
+        self.create_charge(charge_time=charge_time)
+        
+        charge_time = charge_time + datetime.timedelta(minutes=61)
+        self.create_charge(charge_time=charge_time)
+        
+        charge_time = charge_time + datetime.timedelta(minutes=61)
+        self.create_charge(charge_time=charge_time)
+        
+        charge_time = charge_time + datetime.timedelta(minutes=61)
+        self.create_charge(charge_time=charge_time)
         
     def test4(self):
         self.closing_lock()
@@ -89,7 +106,7 @@ class Test(webapp2.RequestHandler):
         
     def update_user(self):
         try:
-            user = User.query(User.code=='1').get()
+            user = User.query(ancestor=ndb.Key('User', '1')).get()
             
             vm = UserViewModel()
             vm.code = '1'
@@ -144,7 +161,7 @@ class Test(webapp2.RequestHandler):
         
     def update_agent(self):
         try:
-            data = Agent.query(Agent.code=='1').get()
+            data = Agent.query(ancestor=ndb.Key('Agent', '1')).get()
             
             vm = AgentViewModel()
             vm.code = '1'
@@ -199,7 +216,7 @@ class Test(webapp2.RequestHandler):
         
     def update_attendant(self):
         try:
-            data = Attendant.query(Attendant.code=='1').get()
+            data = Attendant.query(ancestor=ndb.Key('Attendant', '1')).get()
             
             vm = AttendantViewModel()
             vm.code = '1'
@@ -255,7 +272,7 @@ class Test(webapp2.RequestHandler):
         
     def update_customer(self):
         try:
-            data = Customer.query(Customer.ic=='1').get()
+            data = Customer.query(ancestor=ndb.Key('Customer', '1')).get()
             
             vm = CustomerViewModel()
             vm.ic = '1'
@@ -425,7 +442,7 @@ class Test(webapp2.RequestHandler):
         
         self.response.write("<br />")
         
-    def create_charge(self):
+    def create_charge(self, charge_time=None):
         try:
             vm = ChargeViewModel()
             vm.tran_date = DateTime.malaysia_today()
@@ -435,7 +452,7 @@ class Test(webapp2.RequestHandler):
             vm.comm_per = 2
             
             app_service = ChargeAppService()
-            app_service.create(vm)
+            app_service.create(vm, charge_time)
             
             self.response.write("create_charge OK.")
             

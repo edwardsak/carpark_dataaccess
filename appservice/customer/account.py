@@ -2,6 +2,8 @@ from datalayer.dataaccess.customer import CustomerDataAccess
 from datalayer.dataaccess.customeraudittrail import CustomerAuditTrailDataAccess
 from datalayer.models.models import Customer
 
+from google.appengine.ext import ndb
+
 class AccountAppService():
     def update(self, vm):
         try:
@@ -27,7 +29,8 @@ class AccountAppService():
         
     def login(self, vm):
         try:
-            q = Customer.query(Customer.ic==vm.ic, Customer.pwd==vm.pwd)
+            q = Customer.query(ancestor=ndb.Key(Customer, vm.ic))
+            q = q.filter(Customer.pwd==vm.pwd)
             obj = q.get()
                 
             if obj is None:

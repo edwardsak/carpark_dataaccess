@@ -17,7 +17,7 @@ class UserDataAccess():
         if data_validate != None:
             raise Exception('User ID already exist.')
         
-        data = User(parent=ndb.Key('User', vm.code), id=vm.code)
+        data = User(id=vm.code)
         data.code = vm.code
         data.name = vm.name
         data.pwd = vm.pwd

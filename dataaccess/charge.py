@@ -1,32 +1,39 @@
-from datalayer.models.models import Charge, Attendant, Car
+from datalayer.models.models import Charge, Attendant, Tran
 from datalayer.viewmodels.viewmodels import TranViewModel, CarViewModel
 from datalayer.dataaccess.master import MasterDataAccess
 from datalayer.dataaccess.tran import TranDataAccess
+from datalayer.dataaccess.attendant import AttendantDataAccess
 from datalayer.dataaccess.car import CarDataAccess
 from sharelib.utils import DateTime
 
 from google.appengine.ext import ndb
 
 class ChargeDataAccess():
-    def get(self, attendant_code, tran_code):
-        q = Charge.query(ancestor=ndb.Key('Attendant', attendant_code, 'Charge', tran_code))
-        return q.get()
+    def get_key(self, tran_date, attendant_code=None, tran_code=None):
+        return Tran.get_sub_tran_key(Charge, tran_date,
+                                     Attendant, attendant_code, 
+                                     tran_code)
     
-    def fetch(self, attendant_code):
-        q = Charge.query(ancestor=ndb.Key('Attendant', attendant_code))
-        datas = q.fetch()
-        return datas
+    def get(self, tran_date, attendant_code, tran_code):
+        key = self.get_key(tran_date, attendant_code, tran_code)
+        return Charge.query(ancestor=key).get()
+    
+    def fetch(self, tran_date, attendant_code=None, tran_code=None):
+        key = self.get_key(tran_date, attendant_code, tran_code)
+        return Charge.query(ancestor=key).fetch()
         
     def create(self, vm):
         # get attendant
-        attendant = Attendant.query(Attendant.code==vm.attendant_code).get()
+        attendant_da = AttendantDataAccess()
+        attendant = attendant_da.get(vm.attendant_code)
         if attendant is None:
             raise Exception('Attendant not found.')
         
         vm.attendant = attendant
         
         # get car
-        car = Car.query(Car.reg_no==vm.car_reg_no).get()
+        car_da = CarDataAccess()
+        car = car_da.get(vm.car_reg_no)
         if car is None:
             # if car not found, create car
             car_vm = CarViewModel()
@@ -50,7 +57,10 @@ class ChargeDataAccess():
         # insert deposit
         tran_code = Charge.get_tran_code(master.seq)
         
-        data = Charge(parent=ndb.Key('Attendant', vm.attendant_code), id=tran_code)
+        data = Charge(
+                     parent=self.get_key(vm.tran_date, vm.attendant_code), 
+                     id=tran_code
+                     )
         data.tran_code = tran_code
         data.tran_type = vm.tran_type
         data.tran_date = vm.tran_date
@@ -97,7 +107,7 @@ class ChargeDataAccess():
         
     @ndb.transactional(xg=True)
     def update_charge(self, vm):
-        charge = self.get(vm.attendant_code, vm.tran_code)
+        charge = self.get(vm.tran_date, vm.attendant_code, vm.tran_code)
         if charge is None:
             raise Exception("Charge not found.")
         
@@ -107,6 +117,7 @@ class ChargeDataAccess():
         charge.comm_per = vm.comm_per
         charge.comm_amt = vm.comm_amt
         charge.amt = vm.amt
+        charge.charge_time = vm.charge_time
         charge.put()
         
         # update car bal amt
@@ -118,3 +129,12 @@ class ChargeDataAccess():
         car.bal_amt -= amt
         car.bal_amt = round(car.bal_amt, 2)
         car.put()
+        
+    @ndb.transactional(xg=True)
+    def end(self, vm):
+        charge = self.get(vm.tran_date, vm.attendant_code, vm.tran_code)
+        if charge is None:
+            raise Exception("Charge not found.")
+        
+        charge.ended = True
+        charge.put()

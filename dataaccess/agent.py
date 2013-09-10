@@ -17,7 +17,7 @@ class AgentDataAccess():
         if data_validate != None:
             raise Exception('Agent ID already exist.')
         
-        data = Agent(parent=ndb.Key('Agent', vm.code), id=vm.code)
+        data = Agent(id=vm.code)
         data.code = vm.code
         data.name = vm.name
         data.pwd = vm.pwd

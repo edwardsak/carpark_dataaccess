@@ -1,7 +1,8 @@
-from datalayer.models.models import Register, Agent
+from datalayer.models.models import Register, Agent, Tran
 from datalayer.viewmodels.viewmodels import TranViewModel, CustomerViewModel, CarViewModel, TagViewModel
 from datalayer.dataaccess.master import MasterDataAccess
 from datalayer.dataaccess.tran import TranDataAccess
+from datalayer.dataaccess.agent import AgentDataAccess
 from datalayer.dataaccess.customer import CustomerDataAccess
 from datalayer.dataaccess.car import CarDataAccess
 from datalayer.dataaccess.tag import TagDataAccess
@@ -10,14 +11,23 @@ from sharelib.utils import DateTime
 from google.appengine.ext import ndb
 
 class RegisterDataAccess():
-    def fetch(self, agent_code):
-        q = Register.query(ancestor=ndb.Key('Agent', agent_code))
-        datas = q.fetch()
-        return datas
+    def get_key(self, tran_date, agent_code=None, tran_code=None):
+        return Tran.get_sub_tran_key(Register, tran_date,
+                                     Agent, agent_code, 
+                                     tran_code)
+    
+    def get(self, tran_date, agent_code, tran_code):
+        key = self.get_key(tran_date, agent_code, tran_code)
+        return Register.query(ancestor=key).get()
+    
+    def fetch(self, tran_date, agent_code=None, tran_code=None):
+        key = self.get_key(tran_date, agent_code, tran_code)
+        return Register.query(ancestor=key).fetch()
         
     def create(self, vm):
         # get agent
-        agent = Agent.query(Agent.code==vm.agent_code).get()
+        agent_da = AgentDataAccess()
+        agent = agent_da.get(vm.agent_code)
         if agent is None:
             raise Exception('Agent not found.')
         
@@ -69,7 +79,10 @@ class RegisterDataAccess():
         # insert register
         tran_code = Register.get_tran_code(master.seq)
         
-        data = Register(parent=ndb.Key('Agent', vm.agent_code), id=tran_code)
+        data = Register(
+                        parent=self.get_key(vm.tran_date, vm.agent_code), 
+                        id=tran_code
+                        )
         data.tran_code = tran_code
         data.tran_type = vm.tran_type
         data.tran_date = vm.tran_date

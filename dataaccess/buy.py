@@ -1,20 +1,30 @@
-from datalayer.models.models import Buy, Agent
+from datalayer.models.models import Buy, Agent, Tran
 from datalayer.viewmodels.viewmodels import TranViewModel
 from datalayer.dataaccess.master import MasterDataAccess
 from datalayer.dataaccess.tran import TranDataAccess
+from datalayer.dataaccess.agent import AgentDataAccess
 from sharelib.utils import DateTime
 
 from google.appengine.ext import ndb
 
 class BuyDataAccess():
-    def fetch(self, agent_code):
-        q = Buy.query(ancestor=ndb.Key('Agent', agent_code))
-        buys = q.fetch()
-        return buys
+    def get_key(self, tran_date, agent_code=None, tran_code=None):
+        return Tran.get_sub_tran_key(Buy, tran_date,
+                                     Agent, agent_code, 
+                                     tran_code)
+    
+    def get(self, tran_date, agent_code, tran_code):
+        key = self.get_key(tran_date, agent_code, tran_code)
+        return Buy.query(ancestor=key).get()
+    
+    def fetch(self, tran_date, agent_code=None, tran_code=None):
+        key = self.get_key(tran_date, agent_code, tran_code)
+        return Buy.query(ancestor=key).fetch()
         
     def create(self, buy_obj):
         # get agent
-        agent = Agent.query(Agent.code==buy_obj.agent_code).get()
+        agent_da = AgentDataAccess()
+        agent = agent_da.get(buy_obj.agent_code)
         if agent is None:
             raise Exception('Agent not found.')
         
@@ -33,7 +43,10 @@ class BuyDataAccess():
         # insert buy
         tran_code = Buy.get_tran_code(master.seq)
         
-        buy = Buy(parent=ndb.Key('Agent', buy_obj.agent_code), id=tran_code)
+        buy = Buy(
+                  parent=self.get_key(buy_obj.tran_date, buy_obj.agent_code), 
+                  id=tran_code
+                  )
         buy.tran_code = tran_code
         buy.tran_type = buy_obj.tran_type
         buy.tran_date = buy_obj.tran_date

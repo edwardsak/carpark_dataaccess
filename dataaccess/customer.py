@@ -13,7 +13,7 @@ class CustomerDataAccess():
         if data_validate != None:
             raise Exception('IC/PP No. already exist.')
         
-        data = Customer(parent=ndb.Key('Customer', vm.ic), id=vm.ic)
+        data = Customer(id=vm.ic)
         data.ic = vm.ic
         data.name = vm.name
         data.address = vm.address

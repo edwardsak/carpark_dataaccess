@@ -2,6 +2,8 @@ from datalayer.dataaccess.agent import AgentDataAccess
 from datalayer.dataaccess.agentaudittrail import AgentAuditTrailDataAccess
 from datalayer.models.models import Agent
 
+from google.appengine.ext import ndb
+
 class AccountAppService():
     def update(self, vm):
         try:
@@ -27,7 +29,8 @@ class AccountAppService():
         
     def login(self, vm):
         try:
-            q = Agent.query(Agent.code==vm.code, Agent.pwd==vm.pwd)
+            q = Agent.query(ancestor=ndb.Key(Agent, vm.code))
+            q = q.filter(Agent.pwd==vm.pwd)
             obj = q.get()
                 
             if obj is None:

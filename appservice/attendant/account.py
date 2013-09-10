@@ -2,6 +2,8 @@ from datalayer.dataaccess.attendant import AttendantDataAccess
 from datalayer.dataaccess.attendantaudittrail import AttendantAuditTrailDataAccess
 from datalayer.models.models import Attendant
 
+from google.appengine.ext import ndb
+
 class AccountAppService():
     def update(self, vm):
         try:
@@ -29,7 +31,8 @@ class AccountAppService():
             raise Exception('You must enter a Name.')
         
     def login(self, vm):
-        q = Attendant.query(Attendant.code==vm.code, Attendant.pwd==vm.pwd)
+        q = Attendant.query(ancestor=ndb.Key(Attendant, vm.code))
+        q = q.filter(Attendant.pwd==vm.pwd)
         obj = q.get()
             
         if obj is None:

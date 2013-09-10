@@ -3,10 +3,15 @@ from datalayer.dataaccess.attendantaudittrail import AttendantAuditTrailDataAcce
 from datalayer.models.models import Closing, Charge, Attendant, SystemSetting
 from sharelib.utils import DateTime
 
+from google.appengine.ext import ndb
+
 class ChargeAppService():
-    def create(self, vm):
+    def create(self, vm, charge_time=None):
         try:
-            vm.charge_time = DateTime.malaysia_now()
+            if charge_time is None:
+                vm.charge_time = DateTime.malaysia_now()
+            else:
+                vm.charge_time = charge_time
             
             self.__validate_tran_date(vm)
             self.__validate_attendant_code(vm)
@@ -27,12 +32,12 @@ class ChargeAppService():
             da = ChargeDataAccess()
             
             # get charge
-            charge = Charge.query(
-                                  Charge.lot_no==vm.lot_no, 
-                                  Charge.car_reg_no==vm.car_reg_no,
-                                  Charge.tran_date==vm.tran_date,
-                                  Charge.ended==False
-                                  ).get()
+            q = Charge.query(ancestor=ndb.Key('Attendant', vm.attendant_code))
+            q = q.filter(Charge.lot_no==vm.lot_no, 
+                         Charge.car_reg_no==vm.car_reg_no,
+                         Charge.tran_date==vm.tran_date,
+                         Charge.ended==False)
+            charge = q.get()
             
             if charge is None:
                 # new charge
@@ -46,7 +51,8 @@ class ChargeAppService():
             
                 # if idle duration > 2hrs, end this charge
                 # and create a new charge
-                if vm.idle_duration() > system_setting.reset_duration:
+                idle_duration = vm.idle_duration() 
+                if idle_duration > system_setting.reset_duration:
                     # end charge
                     da.end(vm)
                     
