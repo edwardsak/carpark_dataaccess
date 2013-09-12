@@ -103,7 +103,7 @@ class StatementViewModel():
     tran_date = None
     tran_code = ''
     tran_type = 0
-    car_reg_no = ''
+    agent_code = ''
     description = ''
     bf_amt = 0
     db_amt = 0
