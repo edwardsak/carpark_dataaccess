@@ -13,9 +13,11 @@ from datalayer.appservice.agent.buy import BuyAppService
 from datalayer.appservice.agent.deposit import DepositAppService
 from datalayer.appservice.agent.register import RegisterAppService
 from datalayer.appservice.agent.topup import TopUpAppService
+from datalayer.appservice.agent.statement import Statement as AgentStatement
 from datalayer.appservice.attendant.account import AccountAppService as AttendantAccountAppService
 from datalayer.appservice.attendant.charge import ChargeAppService
 from datalayer.appservice.customer.account import AccountAppService as CustomerAccountAppService
+from datalayer.appservice.customer.statement import Statement as CarStatement
 from datalayer.models.models import User, Agent, Attendant, Customer, SystemSetting, Closing
 from sharelib.object import Object
 from sharelib.utils import DateTime
@@ -35,6 +37,8 @@ class Test(webapp2.RequestHandler):
             self.test3()
         elif case_no == '4':
             self.test4()
+        elif case_no == '5':
+            self.test5()
         else:
             self.response.write("Test case not found.")
         
@@ -86,6 +90,10 @@ class Test(webapp2.RequestHandler):
     def test4(self):
         self.closing_lock()
         self.closing_close()
+        
+    def test5(self):
+        self.get_agent_statement()
+        self.get_car_statement()
         
     def create_user(self):
         try:
@@ -489,5 +497,51 @@ class Test(webapp2.RequestHandler):
             
         except Exception, ex:
             self.response.write("closing_close failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def get_agent_statement(self):
+        try:
+            statement = AgentStatement()
+            values = statement.get('1', DateTime.malaysia_today())
+            
+            self.response.write("<table border='1'>")
+            for value in values:
+                self.response.write("<tr>")
+                self.response.write("<td>%s</td>" % DateTime.to_date_string(value.tran_date))
+                self.response.write("<td>%s</td>" % value.tran_code)
+                self.response.write("<td>%s</td>" % value.description)
+                self.response.write("<td>%s</td>" % value.db_amt)
+                self.response.write("<td>%s</td>" % value.cr_amt)
+                self.response.write("<td>%s</td>" % value.bal_amt)
+                self.response.write("</tr>")
+            self.response.write("</table>")
+            
+            self.response.write("get_agent_statement OK.")
+        except Exception, ex:
+            self.response.write("get_agent_statement failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def get_car_statement(self):
+        try:
+            statement = CarStatement()
+            values = statement.get('WKG4952', DateTime.malaysia_today())
+            
+            self.response.write("<table border='1'>")
+            for value in values:
+                self.response.write("<tr>")
+                self.response.write("<td>%s</td>" % DateTime.to_date_string(value.tran_date))
+                self.response.write("<td>%s</td>" % value.tran_code)
+                self.response.write("<td>%s</td>" % value.description)
+                self.response.write("<td>%s</td>" % value.db_amt)
+                self.response.write("<td>%s</td>" % value.cr_amt)
+                self.response.write("<td>%s</td>" % value.bal_amt)
+                self.response.write("</tr>")
+            self.response.write("</table>")
+            
+            self.response.write("get_car_statement OK.")
+        except Exception, ex:
+            self.response.write("get_car_statement failed. %s" % str(ex))
         
         self.response.write("<br />")
