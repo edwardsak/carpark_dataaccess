@@ -65,6 +65,17 @@ class TagViewModel():
     last_modified = ''
     user_code = ''
     
+class SystemSettingViewModel():
+    tag_sell_price = 0
+    reset_duration = 0
+    announcement = ''
+    user_code = ''
+    
+class ClosingViewModel():
+    closing_date = None
+    audit_lock = False
+    user_code = ''
+    
 class TranViewModel():
     tran_type = 0
     tran_code = ''

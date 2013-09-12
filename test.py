@@ -1,3 +1,4 @@
+from datalayer.viewmodels.viewmodels import SystemSettingViewModel, ClosingViewModel
 from datalayer.viewmodels.viewmodels import UserViewModel, AgentViewModel, AttendantViewModel, CustomerViewModel
 from datalayer.viewmodels.viewmodels import BuyViewModel, DepositViewModel, RegisterViewModel, TopUpViewModel, ChargeViewModel
 from datalayer.appservice.admin.user import UserAppService
@@ -317,7 +318,7 @@ class Test(webapp2.RequestHandler):
                 self.response.write("<br />")
                 return
             
-            vm = Object()
+            vm = SystemSettingViewModel()
             vm.tag_sell_price = 10
             vm.reset_duration = 2
             
@@ -339,7 +340,7 @@ class Test(webapp2.RequestHandler):
                 self.response.write("<br />")
                 return
             
-            vm = Object()
+            vm = ClosingViewModel()
             vm.closing_date = DateTime.malaysia_today() - datetime.timedelta(days=1)
             
             app_service = ClosingAppService()
