@@ -1,10 +1,15 @@
 from datalayer.appservice.admin.reports.sale import SaleByDay
-from datalayer.appservice.admin.reports.chargesummary import ChargeSummaryByDay
+from datalayer.appservice.admin.reports.chargesummary import ChargeSummary
 from sharelib.utils import DateTime
 
-class ProfitByDay():
-    def get(self, date_from, date_to):
+class Profit():
+    def get_by_day(self, date_from, date_to):
         return self.__get(date_from, date_to)
+    
+    def get_by_month(self, date_from, date_to):
+        date_from2 = DateTime.first_day_of_month(date_from)
+        date_to2 = DateTime.last_day_of_month(date_to)
+        return self.__get(date_from2, date_to2, date_format='%Y%m')
     
     def __get(self, date_from, date_to, date_format='%Y%m%d'):
         # get cost
@@ -12,8 +17,8 @@ class ProfitByDay():
         sales = sale_app.get(date_from, date_to)
         
         # get charge
-        charge_app = ChargeSummaryByDay()
-        charges = charge_app.get(date_from, date_to)
+        charge_app = ChargeSummary()
+        charges = charge_app.get_by_day(date_from, date_to)
         
         # group
         profit_list = []
@@ -56,13 +61,6 @@ class ProfitByDay():
             profit.cal_amt()
             
         return profit_list
-    
-class ProfitByMonth():
-    def get(self, date_from, date_to):
-        date_from2 = DateTime.first_day_of_month(date_from)
-        date_to2 = DateTime.last_day_of_month(date_to)
-        
-        return self.__get(date_from2, date_to2, date_format='%Y%m')
                 
 class ProfitViewModel():
     tran_date = None

@@ -1,11 +1,16 @@
 from datalayer.models.models import Charge
 from sharelib.utils import DateTime
 
-class ChargeSummaryByDayAndAttendant():
-    def get(self, date_from, date_to, attendant_code):
-        return self.__get(date_from, date_to, attendant_code)
+class ChargeSummary():
+    def get_by_day_and_attendant(self, date_from, date_to, attendant_code):
+        return self.__get_by_day_and_attendant(date_from, date_to, attendant_code)
     
-    def __get(self, date_from, date_to, attendant_code, date_format='%Y%m%d'):
+    def get_by_month_and_attendant(self, date_from, date_to, attendant_code):
+        date_from2 = DateTime.first_day_of_month(date_from)
+        date_to2 = DateTime.last_day_of_month(date_to)
+        return self.__get_by_day_and_attendant(date_from2, date_to2, attendant_code, '%Y%m')
+    
+    def __get_by_day_and_attendant(self, date_from, date_to, attendant_code, date_format='%Y%m%d'):
         # get charge
         q = Charge.query()
         
@@ -43,20 +48,15 @@ class ChargeSummaryByDayAndAttendant():
         
         return charge_attendants
     
-class ChargeSummaryByMonthAndAttendant():
-    def get(self, date_from, date_to, attendant_code):
+    def get_by_day(self, date_from, date_to):
+        return self.__get_by_day(date_from, date_to)
+    
+    def get_by_month(self, date_from, date_to):
         date_from2 = DateTime.first_day_of_month(date_from)
         date_to2 = DateTime.last_day_of_month(date_to)
-        
-        # get charge
-        summary_by_day = ChargeSummaryByDayAndAttendant()
-        return summary_by_day.__get(date_from2, date_to2, attendant_code, '%Y%m')
-
-class ChargeSummaryByDay():
-    def get(self, date_from, date_to):
-        return self.__get(date_from, date_to)
+        return self.__get_by_day(date_from2, date_to2, '%Y%m')
     
-    def __get(self, date_from, date_to, date_format='%Y%m%d'):
+    def __get_by_day(self, date_from, date_to, date_format='%Y%m%d'):
         # get charge
         q = Charge.query()
         
@@ -89,15 +89,6 @@ class ChargeSummaryByDay():
             charge_day.amt += charge.amt
         
         return charge_list
-    
-class ChargeSummaryByMonth():
-    def get(self, date_from, date_to):
-        date_from2 = DateTime.first_day_of_month(date_from)
-        date_to2 = DateTime.last_day_of_month(date_to)
-        
-        # get charge
-        summary_by_day = ChargeSummaryByDay()
-        return summary_by_day.__get(date_from2, date_to2, '%Y%m')
     
 class ChargeSummaryViewModel():
     tran_date = None
