@@ -8,6 +8,9 @@ from datalayer.appservice.admin.customer import CustomerAppService
 from datalayer.appservice.admin.account import AccountAppService as UserAccountAppService
 from datalayer.appservice.admin.systemsetting import SystemSettingAppService
 from datalayer.appservice.admin.closing import ClosingAppService
+from datalayer.appservice.admin.reports.chargesummary import ChargeSummaryByDayAndAttendant, ChargeSummaryByDay
+from datalayer.appservice.admin.reports.sale import SaleByDay
+from datalayer.appservice.admin.reports.profit import ProfitByDay
 from datalayer.appservice.agent.account import AccountAppService as AgentAccountAppService
 from datalayer.appservice.agent.buy import BuyAppService
 from datalayer.appservice.agent.deposit import DepositAppService
@@ -39,6 +42,8 @@ class Test(webapp2.RequestHandler):
             self.test4()
         elif case_no == '5':
             self.test5()
+        elif case_no == '6':
+            self.test6()
         else:
             self.response.write("Test case not found.")
         
@@ -94,6 +99,12 @@ class Test(webapp2.RequestHandler):
     def test5(self):
         self.get_agent_statement()
         self.get_car_statement()
+        
+    def test6(self):
+        self.get_charge_summary_by_day_and_attendant()
+        self.get_charge_summary_by_day()
+        self.get_sale_by_day()
+        self.get_profit_by_day()
         
     def create_user(self):
         try:
@@ -543,5 +554,93 @@ class Test(webapp2.RequestHandler):
             self.response.write("get_car_statement OK.")
         except Exception, ex:
             self.response.write("get_car_statement failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def get_charge_summary_by_day_and_attendant(self):
+        try:
+            charge_app = ChargeSummaryByDayAndAttendant()
+            values = charge_app.get(DateTime.malaysia_today(), None, '')
+            
+            self.response.write("<table border='1'>")
+            for value in values:
+                self.response.write("<tr>")
+                self.response.write("<td>%s</td>" % DateTime.to_date_string(value.tran_date))
+                self.response.write("<td>%s</td>" % value.attendant_code)
+                self.response.write("<td>%s</td>" % value.sub_total)
+                self.response.write("<td>%s</td>" % value.comm_amt)
+                self.response.write("<td>%s</td>" % value.amt)
+                self.response.write("</tr>")
+            self.response.write("</table>")
+            
+            self.response.write("get_charge_summary_by_day_and_attendant OK.")
+        except Exception, ex:
+            self.response.write("get_charge_summary_by_day_and_attendant failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+    
+    def get_charge_summary_by_day(self):
+        try:
+            charge_app = ChargeSummaryByDay()
+            values = charge_app.get(DateTime.malaysia_today(), None)
+            
+            self.response.write("<table border='1'>")
+            for value in values:
+                self.response.write("<tr>")
+                self.response.write("<td>%s</td>" % DateTime.to_date_string(value.tran_date))
+                self.response.write("<td>%s</td>" % value.sub_total)
+                self.response.write("<td>%s</td>" % value.comm_amt)
+                self.response.write("<td>%s</td>" % value.amt)
+                self.response.write("</tr>")
+            self.response.write("</table>")
+            
+            self.response.write("get_charge_summary_by_day OK.")
+        except Exception, ex:
+            self.response.write("get_charge_summary_by_day failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def get_sale_by_day(self):
+        try:
+            sale_app = SaleByDay()
+            values = sale_app.get(DateTime.malaysia_today(), None)
+            
+            self.response.write("<table border='1'>")
+            for value in values:
+                self.response.write("<tr>")
+                self.response.write("<td>%s</td>" % DateTime.to_date_string(value.tran_date))
+                self.response.write("<td>%s</td>" % value.buy_sub_total)
+                self.response.write("<td>%s</td>" % value.top_up_sub_total)
+                self.response.write("<td>%s</td>" % value.sub_total)
+                self.response.write("</tr>")
+            self.response.write("</table>")
+            
+            self.response.write("get_sale_by_day OK.")
+        except Exception, ex:
+            self.response.write("get_sale_by_day failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def get_profit_by_day(self):
+        try:
+            profit_app = ProfitByDay()
+            values = profit_app.get(DateTime.malaysia_today(), None)
+            
+            self.response.write("<table border='1'>")
+            for value in values:
+                self.response.write("<tr>")
+                self.response.write("<td>%s</td>" % DateTime.to_date_string(value.tran_date))
+                self.response.write("<td>%s</td>" % value.buy_sub_total)
+                self.response.write("<td>%s</td>" % value.buy_comm_amt)
+                self.response.write("<td>%s</td>" % value.top_up_sub_total)
+                self.response.write("<td>%s</td>" % value.top_up_comm_amt)
+                self.response.write("<td>%s</td>" % value.charge_comm_amt)
+                self.response.write("<td>%s</td>" % value.amt)
+                self.response.write("</tr>")
+            self.response.write("</table>")
+            
+            self.response.write("get_profit_by_day OK.")
+        except Exception, ex:
+            self.response.write("get_profit_by_day failed. %s" % str(ex))
         
         self.response.write("<br />")

@@ -270,7 +270,8 @@ class ChargeViewModel():
         self.sub_total = amt
     
     def cal_comm_amt(self):
-        self.comm_amt = round(self.sub_total * self.comm_per / 100, 2)
+        # comm amt is round to 4 decimal because its value is small
+        self.comm_amt = round(self.sub_total * self.comm_per / 100, 4)
         
     def cal_amt(self):
         self.amt = round(self.sub_total - self.comm_amt, 2)

@@ -3,8 +3,6 @@ from datalayer.dataaccess.attendantaudittrail import AttendantAuditTrailDataAcce
 from datalayer.models.models import Closing, Charge, Attendant, SystemSetting
 from sharelib.utils import DateTime
 
-from google.appengine.ext import ndb
-
 class ChargeAppService():
     def create(self, vm, charge_time=None):
         try:
@@ -32,11 +30,11 @@ class ChargeAppService():
             da = ChargeDataAccess()
             
             # get charge
-            q = Charge.query(ancestor=ndb.Key('Attendant', vm.attendant_code))
+            q = Charge.query(ancestor=da.get_key(vm.tran_date))
             q = q.filter(Charge.lot_no==vm.lot_no, 
                          Charge.car_reg_no==vm.car_reg_no,
-                         Charge.tran_date==vm.tran_date,
-                         Charge.ended==False)
+                         Charge.ended==False,
+                         Charge.void==False)
             charge = q.get()
             
             if charge is None:
