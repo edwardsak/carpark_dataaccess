@@ -27,6 +27,7 @@ class AgentDataAccess():
         data.hp = vm.hp
         data.email = vm.email
         data.comm_per = vm.comm_per
+        data.credit_limit = vm.credit_limit
         data.bal_amt = vm.bal_amt
         data.active = vm.active
         data.last_modified = str(DateTime.malaysia_now())
@@ -54,10 +55,31 @@ class AgentDataAccess():
         data.hp = vm.hp
         data.email = vm.email
         data.comm_per = vm.comm_per
+        data.credit_limit = vm.credit_limit
         data.active = vm.active
         data.last_modified = str(DateTime.malaysia_now())
         data.put()
         
+    def account_update(self, vm):
+        self.__account_update(vm)
+        
+    @ndb.transactional(xg=True)
+    def __account_update(self, vm):
+        # get data
+        data = self.get(vm.code)
+        if data == None:
+            raise Exception('Agent not found.')
+        
+        # validate lastModified
+        if data.last_modified != vm.last_modified:
+            raise Exception('Record has been modified by other user.')
+        
+        data.address = vm.address
+        data.tel = vm.tel
+        data.hp = vm.hp
+        data.email = vm.email
+        data.last_modified = str(DateTime.malaysia_now())
+        data.put()
         
     def reset_pwd(self, vm):
         self.__reset_pwd(vm)

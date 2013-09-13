@@ -47,7 +47,6 @@ class UserDataAccess():
         data.last_modified = str(DateTime.malaysia_now())
         data.put()
         
-        
     def reset_pwd(self, vm):
         self.__reset_pwd(vm)
     

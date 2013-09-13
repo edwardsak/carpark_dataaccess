@@ -53,6 +53,29 @@ class CustomerDataAccess():
         
         return data
     
+    def account_update(self, vm):
+        return self.__account_update(vm)
+    
+    @ndb.transactional(xg=True)
+    def __account_update(self, vm):
+        # get data
+        data = self.get(vm.ic)
+        if data == None:
+            raise Exception('Customer not found.')
+        
+        # validate lastModified
+        if data.last_modified != vm.last_modified:
+            raise Exception('Record has been modified by other user.')
+        
+        data.address = vm.address
+        data.tel = vm.tel
+        data.hp = vm.hp
+        data.email = vm.email
+        data.last_modified = str(DateTime.malaysia_now())
+        data.put()
+        
+        return data
+    
     def save_register(self, vm):
         customer = self.get(vm.ic)
         if customer:

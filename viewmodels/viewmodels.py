@@ -21,6 +21,7 @@ class AgentViewModel():
     email = ''
     account_type = 1
     comm_per = 0
+    credit_limit = 0
     bal_amt = 0
     active = True
     last_modified = ''

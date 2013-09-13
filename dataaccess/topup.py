@@ -101,8 +101,8 @@ class TopUpDataAccess(BaseTranDataAccess):
         agent.bal_amt -= vm.amt
         agent.bal_amt = round(agent.bal_amt, 2)
         
-        if agent.bal_amt < 0:
-            raise Exception('You have no more Balance.')
+        if agent.bal_amt < agent.credit_limit:
+            raise Exception('You have no more Credits.')
         
         agent.put()
         

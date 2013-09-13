@@ -10,7 +10,7 @@ class AccountAppService():
             self.valiate(vm)
             
             da = CustomerDataAccess()
-            da.update(vm)
+            da.account_update(vm)
             
         except Exception as ex:
             audit_da = CustomerAuditTrailDataAccess()

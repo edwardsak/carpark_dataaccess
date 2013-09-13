@@ -42,6 +42,7 @@ class Agent(ndb.Model):
     account_type = ndb.IntegerProperty()
     comm_per = ndb.FloatProperty()
     bal_amt = ndb.FloatProperty()
+    credit_limit = ndb.FloatProperty()
     active = ndb.BooleanProperty()
     last_modified = ndb.StringProperty()
     

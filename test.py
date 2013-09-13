@@ -233,6 +233,7 @@ class Test(webapp2.RequestHandler):
             vm.name = '2'
             vm.account_type = 1
             vm.comm_per = 5
+            vm.credit_limit = -100
             vm.last_modified = data.last_modified
             
             app_service = AgentAppService()
