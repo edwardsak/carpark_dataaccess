@@ -7,7 +7,7 @@ class ProfitByDay():
         return self.__get(date_from, date_to)
     
     def __get(self, date_from, date_to, date_format='%Y%m%d'):
-        # get sale
+        # get cost
         sale_app = SaleByDay()
         sales = sale_app.get(date_from, date_to)
         
@@ -31,9 +31,6 @@ class ProfitByDay():
                 profit_days[key] = profit
                 profit_list.append(profit)
                 
-            profit.buy_sub_total += sale.buy_sub_total
-            profit.buy_comm_amt += sale.buy_comm_amt
-            profit.top_up_sub_total += sale.top_up_sub_total
             profit.top_up_comm_amt += sale.top_up_comm_amt
             
         for charge in charges:
@@ -78,5 +75,4 @@ class ProfitViewModel():
     amt = 0
     
     def cal_amt(self):
-        self.amt = round(self.buy_sub_total - self.buy_comm_amt + self.top_up_sub_total - self.top_up_comm_amt 
-                         - self.charge_comm_amt, 2)
+        self.amt = round(self.charge_sub_total - self.charge_comm_amt - self.top_up_comm_amt, 2)
