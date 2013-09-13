@@ -45,6 +45,7 @@ class BuyDataAccess(BaseTranDataAccess):
         
         # insert buy
         tran_code = Buy.get_tran_code(master.seq)
+        buy_obj.tran_code = tran_code    # return tran_code
         
         buy = Buy(
                   parent=self.get_key(buy_obj.tran_date, buy_obj.agent_code), 
