@@ -92,7 +92,7 @@ class SaleViewModel():
     amt = 0
     
     def cal_sub_total(self):
-        self.sub_total = self.buy_sub_total + self.top_up_sub_total
+        self.sub_total = round(self.buy_sub_total + self.top_up_sub_total, 2)
         
     def cal_amt(self):
-        self.amt = self.buy_amt + self.top_up_amt
+        self.amt = round(self.buy_amt + self.top_up_amt, 2)

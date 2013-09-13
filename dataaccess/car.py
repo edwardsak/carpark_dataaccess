@@ -17,7 +17,7 @@ class CarDataAccess():
         data.reg_no = vm.reg_no
         data.customer_ic = vm.customer_ic
         data.customer = vm.customer.key
-        data.bal_amt = 0
+        data.bal_amt = vm.bal_amt   # register may be RM10
         data.active = True
         data.last_modified = str(DateTime.malaysia_now())
         data.put()

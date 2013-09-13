@@ -106,6 +106,51 @@ class Test(webapp2.RequestHandler):
         self.get_sale_by_day()
         self.get_profit_by_day()
         
+    def create_system_setting(self):
+        try:
+            system_setting = SystemSetting.query().get()
+            if system_setting:
+                self.response.write("System Setting already exist.")
+                self.response.write("<br />")
+                return
+            
+            vm = SystemSettingViewModel()
+            vm.tag_unit_price = 3.5
+            vm.tag_sell_price = 10
+            vm.register_value = 12
+            vm.reset_duration = 2
+            
+            app_service = SystemSettingAppService()
+            app_service.create(vm)
+            
+            self.response.write("create_system_setting OK.")
+            
+        except Exception, ex:
+            self.response.write("create_system_setting failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
+    def create_closing(self):
+        try:
+            closing = Closing.query().get()
+            if closing:
+                self.response.write("closing already exist.")
+                self.response.write("<br />")
+                return
+            
+            vm = ClosingViewModel()
+            vm.closing_date = DateTime.malaysia_today() - datetime.timedelta(days=1)
+            
+            app_service = ClosingAppService()
+            app_service.create(vm)
+            
+            self.response.write("create_closing OK.")
+            
+        except Exception, ex:
+            self.response.write("create_closing failed. %s" % str(ex))
+        
+        self.response.write("<br />")
+        
     def create_user(self):
         try:
             vm = UserViewModel()
@@ -326,49 +371,6 @@ class Test(webapp2.RequestHandler):
         
         except Exception, ex:
             self.response.write("customer_login failed. %s" % str(ex))
-        
-        self.response.write("<br />")
-        
-    def create_system_setting(self):
-        try:
-            system_setting = SystemSetting.query().get()
-            if system_setting:
-                self.response.write("System Setting already exist.")
-                self.response.write("<br />")
-                return
-            
-            vm = SystemSettingViewModel()
-            vm.tag_sell_price = 10
-            vm.reset_duration = 2
-            
-            app_service = SystemSettingAppService()
-            app_service.create(vm)
-            
-            self.response.write("create_system_setting OK.")
-            
-        except Exception, ex:
-            self.response.write("create_system_setting failed. %s" % str(ex))
-        
-        self.response.write("<br />")
-        
-    def create_closing(self):
-        try:
-            closing = Closing.query().get()
-            if closing:
-                self.response.write("closing already exist.")
-                self.response.write("<br />")
-                return
-            
-            vm = ClosingViewModel()
-            vm.closing_date = DateTime.malaysia_today() - datetime.timedelta(days=1)
-            
-            app_service = ClosingAppService()
-            app_service.create(vm)
-            
-            self.response.write("create_closing OK.")
-            
-        except Exception, ex:
-            self.response.write("create_closing failed. %s" % str(ex))
         
         self.response.write("<br />")
         

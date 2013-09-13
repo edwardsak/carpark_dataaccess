@@ -105,4 +105,3 @@ class ChargeSummaryViewModel():
     sub_total = 0
     comm_amt = 0
     amt = 0
-        

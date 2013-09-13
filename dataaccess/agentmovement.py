@@ -1,12 +1,13 @@
 from datalayer.models.models import AgentMovement, Agent
+from datalayer.dataaccess.basemovement import BaseMovementDataAccess
 
-class AgentMovementDataAccess():
+class AgentMovementDataAccess(BaseMovementDataAccess):
     def get_key(self, movement_date, agent_code=None, movement_code=None):
-        return AgentMovement.get_key(
-                                     AgentMovement, movement_date, 
-                                     Agent, agent_code, 
-                                     movement_code
-                                     )
+        return self._BaseMovementDataAccess__get_key(
+                            AgentMovement, movement_date, 
+                            Agent, agent_code, 
+                            movement_code
+                            )
     
     def get(self, movement_date, agent_code, movement_code):
         key = self.get_key(movement_date, agent_code, movement_code)

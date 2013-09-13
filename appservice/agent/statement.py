@@ -111,4 +111,4 @@ class StatementViewModel():
     bal_amt = 0
     
     def cal_bal_amt(self):
-        self.bal_amt = self.bf_amt + self.db_amt - self.cr_amt
+        self.bal_amt = round(self.bf_amt + self.db_amt - self.cr_amt, 2)

@@ -1,5 +1,6 @@
-from datalayer.models.models import Register, Agent, Tran
+from datalayer.models.models import Register, Agent
 from datalayer.viewmodels.viewmodels import TranViewModel, CustomerViewModel, CarViewModel, TagViewModel
+from datalayer.dataaccess.basetran import BaseTranDataAccess
 from datalayer.dataaccess.master import MasterDataAccess
 from datalayer.dataaccess.tran import TranDataAccess
 from datalayer.dataaccess.agent import AgentDataAccess
@@ -10,11 +11,13 @@ from sharelib.utils import DateTime
 
 from google.appengine.ext import ndb
 
-class RegisterDataAccess():
+class RegisterDataAccess(BaseTranDataAccess):
     def get_key(self, tran_date, agent_code=None, tran_code=None):
-        return Tran.get_sub_tran_key(Register, tran_date,
-                                     Agent, agent_code, 
-                                     tran_code)
+        return self._BaseTranDataAccess__get_key(
+                            Register, tran_date,
+                            Agent, agent_code, 
+                            tran_code
+                            )
     
     def get(self, tran_date, agent_code, tran_code):
         key = self.get_key(tran_date, agent_code, tran_code)

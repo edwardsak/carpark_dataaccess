@@ -66,7 +66,9 @@ class TagViewModel():
     user_code = ''
     
 class SystemSettingViewModel():
+    tag_unit_price = 0
     tag_sell_price = 0
+    register_value = 0
     reset_duration = 0
     announcement = ''
     user_code = ''

@@ -1,21 +1,23 @@
+from datalayer.appservice.base.basetran import BaseTranAppService
 from datalayer.dataaccess.register import RegisterDataAccess
 from datalayer.dataaccess.agentaudittrail import AgentAuditTrailDataAccess
-from datalayer.models.models import Closing, SystemSetting
-from sharelib.utils import DateTime
+from datalayer.dataaccess.systemsetting import SystemSettingDataAccess
 
-class RegisterAppService():
+class RegisterAppService(BaseTranAppService):
     def create(self, vm):
         try:
-            self.__validate_tran_date(vm)
+            self.validate_tran_date(vm)
+            self.validate_closing(vm)
             self.__validate_agent_code(vm)
             self.__validate_car_reg_no(vm)
             self.__validate_customer_ic(vm)
             self.__validate_customer_name(vm)
             self.__validate_tag_code(vm)
             
-            # get tag sell price
-            system_setting = SystemSetting.query().get()
-            vm.sub_total = system_setting.tag_sell_price
+            # get register value
+            system_da = SystemSettingDataAccess()
+            system_setting = system_da.get()
+            vm.sub_total = system_setting.register_value
         
             da = RegisterDataAccess()
             da.create(vm)
@@ -28,15 +30,6 @@ class RegisterAppService():
         audit_da = AgentAuditTrailDataAccess()
         audit_da.create(vm.agent_code, 'Create Register', 'Ok.')
         
-    def __validate_tran_date(self, vm):
-        if vm.tran_date is None:
-            raise Exception('You must enter a Transaction Date.')
-        
-        closing = Closing.query().get()
-            
-        if DateTime.date_diff('day', closing.closing_date, vm.tran_date) < 0:
-            raise Exception('You cannot create/modify this transaction because already closed.')
-            
     def __validate_agent_code(self, vm):
         if vm.agent_code == None or len(vm.agent_code) < 1:
             raise Exception("You must enter an Agent ID.")

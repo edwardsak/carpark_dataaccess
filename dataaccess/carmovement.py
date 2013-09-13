@@ -1,12 +1,13 @@
-from datalayer.models.models import CarMovement, AgentMovement, Car
+from datalayer.models.models import CarMovement, Car
+from datalayer.dataaccess.basemovement import BaseMovementDataAccess
 
-class CarMovementDataAccess():
+class CarMovementDataAccess(BaseMovementDataAccess):
     def get_key(self, movement_date, car_reg_no=None, movement_code=None):
-        return AgentMovement.get_key(
-                                     CarMovement, movement_date, 
-                                     Car, car_reg_no, 
-                                     movement_code
-                                     )
+        return self._BaseMovementDataAccess__get_key(
+                            CarMovement, movement_date, 
+                            Car, car_reg_no, 
+                            movement_code
+                            )
     
     def get(self, movement_date, car_reg_no, movement_code):
         key = self.get_key(movement_date, car_reg_no, movement_code)

@@ -1,9 +1,12 @@
+from datalayer.appservice.base.basetran import BaseTranAppService
 from datalayer.dataaccess.charge import ChargeDataAccess
 from datalayer.dataaccess.attendantaudittrail import AttendantAuditTrailDataAccess
-from datalayer.models.models import Closing, Charge, Attendant, SystemSetting
+from datalayer.dataaccess.systemsetting import SystemSettingDataAccess
+from datalayer.dataaccess.attendant import AttendantDataAccess
+from datalayer.models.models import Charge
 from sharelib.utils import DateTime
 
-class ChargeAppService():
+class ChargeAppService(BaseTranAppService):
     def create(self, vm, charge_time=None):
         try:
             if charge_time is None:
@@ -11,20 +14,23 @@ class ChargeAppService():
             else:
                 vm.charge_time = charge_time
             
-            self.__validate_tran_date(vm)
+            self.validate_tran_date(vm)
+            self.validate_closing(vm)
             self.__validate_attendant_code(vm)
             self.__validate_lot_no(vm)
             self.__validate_car_reg_no(vm)
             
             # get attendance comm
-            attendant = Attendant.query(Attendant.code==vm.attendant_code).get()
+            attendant_da = AttendantDataAccess()
+            attendant = attendant_da.get(vm.attendant_code)
             if attendant is None:
                 raise Exception('Attendant not found.')
             
             vm.comm_per = attendant.comm_per
             
             # get system setting
-            system_setting = SystemSetting.query().get()
+            system_da = SystemSettingDataAccess()
+            system_setting = system_da.get()
             
             # save charge
             da = ChargeDataAccess()
@@ -77,15 +83,6 @@ class ChargeAppService():
         audit_da = AttendantAuditTrailDataAccess()
         audit_da.create(vm.attendant_code, 'Create Charge', 'Ok.')
                 
-    def __validate_tran_date(self, vm):
-        if vm.tran_date is None:
-            raise Exception('You must enter a Transaction Date.')
-        
-        closing = Closing.query().get()
-            
-        if DateTime.date_diff('day', closing.closing_date, vm.tran_date) < 0:
-            raise Exception('You cannot create/modify this transaction because already closed.')
-            
     def __validate_attendant_code(self, vm):
         if vm.attendant_code == None or len(vm.attendant_code) < 1:
             raise Exception("You must enter an Attendant ID.")

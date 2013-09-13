@@ -1,18 +1,18 @@
 from google.appengine.ext import ndb
 
-class BaseMovementDataAccess():
-    """ return ndb key for agentMovement and CarMovement
-    person_kind = Agent or Car
-    person_code = agent_code or car_reg_no
+class BaseTranDataAccess():
+    """ return ndb key for transaction such as Buy, Deposit, etc.
+    person_kind = Agent or Attendant
+    person_code = agent_code or attendant_code
     """
-    def __get_key(self, kind, movement_date, person_kind, person_code=None, movement_code=None):
-        date_code = movement_date.strftime('%Y%m%d')
+    def __get_key(self, kind, tran_date, person_kind, person_code=None, tran_code=None):
+        date_code = tran_date.strftime('%Y%m%d')
         
         key = None
         if person_code is None:
             key = ndb.Key(kind, date_code)
         else:
-            if movement_code is None:
+            if tran_code is None:
                 key = ndb.Key(
                               kind, date_code, 
                               person_kind, person_code
@@ -21,7 +21,7 @@ class BaseMovementDataAccess():
                 key = ndb.Key(
                               kind, date_code, 
                               person_kind, person_code,
-                              kind, movement_code
+                              kind, tran_code
                               )
             
         return key

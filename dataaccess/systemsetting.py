@@ -12,7 +12,9 @@ class SystemSettingDataAccess():
     @ndb.transactional(xg=True)
     def __create(self, vm):
         sys = SystemSetting(id='1')
+        sys.tag_unit_price = vm.tag_unit_price
         sys.tag_sell_price = vm.tag_sell_price
+        sys.register_value = vm.register_value
         sys.reset_duration = vm.reset_duration
         sys.user_access_lock = False
         sys.agent_access_lock = False
@@ -23,7 +25,9 @@ class SystemSettingDataAccess():
         
     def update(self, vm):
         sys = self.get()
+        sys.tag_unit_price = vm.tag_unit_price
         sys.tag_sell_price = vm.tag_sell_price
+        sys.register_value = vm.register_value
         sys.reset_duration = vm.reset_duration
         sys.user_access_lock = vm.user_access_lock
         sys.agent_access_lock = vm.agent_access_lock

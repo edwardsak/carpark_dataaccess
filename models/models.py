@@ -101,7 +101,9 @@ class Closing(ndb.Model):
     audit_lock = ndb.BooleanProperty()
     
 class SystemSetting(ndb.Model):
+    tag_unit_price = ndb.FloatProperty()
     tag_sell_price = ndb.FloatProperty()
+    register_value = ndb.FloatProperty()
     reset_duration = ndb.FloatProperty()
     user_access_lock = ndb.BooleanProperty()
     agent_access_lock = ndb.BooleanProperty()
@@ -134,32 +136,6 @@ class Tran(ndb.Model):
                 (Tran.TRAN_TYPE_TOP_UP, 'Top Up'), 
                 (Tran.TRAN_TYPE_CHARGE, 'Charge')
                 )
-    
-    """ return ndb key for transaction such as Buy, Deposit, etc.
-    person_kind = Agent or Attendant
-    person_code = agent_code or attendant_code
-    """
-    @staticmethod
-    def get_sub_tran_key(kind, tran_date, person_kind, person_code=None, tran_code=None):
-        date_code = tran_date.strftime('%Y%m%d')
-        
-        key = None
-        if person_code is None:
-            key = ndb.Key(kind, date_code)
-        else:
-            if tran_code is None:
-                key = ndb.Key(
-                              kind, date_code, 
-                              person_kind, person_code
-                              )
-            else:
-                key = ndb.Key(
-                              kind, date_code, 
-                              person_kind, person_code,
-                              kind, tran_code
-                              )
-            
-        return key
 
 class AgentMovement(ndb.Model):
     movement_code = ndb.StringProperty(required=True)
@@ -173,32 +149,6 @@ class AgentMovement(ndb.Model):
     @staticmethod
     def get_movement_code(agent_code, movement_date):
         return "%s|%s" % (agent_code, movement_date.strftime('%Y%m%d'))
-    
-    """ return ndb key for AgentMovement or CarMovement
-    person_kind = Agent or Car
-    person_code = agent_code or car_reg_no
-    """
-    @staticmethod
-    def get_key(kind, movement_date, person_kind, person_code=None, movement_code=None):
-        date_code = movement_date.strftime('%Y%m%d')
-        
-        key = None
-        if person_code is None:
-            key = ndb.Key(kind, date_code)
-        else:
-            if movement_code is None:
-                key = ndb.Key(
-                              kind, date_code, 
-                              person_kind, person_code
-                              )
-            else:
-                key = ndb.Key(
-                              kind, date_code, 
-                              person_kind, person_code,
-                              kind, movement_code
-                              )
-            
-        return key
     
 class CarMovement(ndb.Model):
     movement_code = ndb.StringProperty(required=True)
