@@ -81,6 +81,7 @@ class RegisterDataAccess(BaseTranDataAccess):
         
         # insert register
         tran_code = Register.get_tran_code(master.seq)
+        vm.tran_code = tran_code
         
         data = Register(
                         parent=self.get_key(vm.tran_date, vm.agent_code), 

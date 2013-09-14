@@ -59,6 +59,7 @@ class ChargeDataAccess(BaseTranDataAccess):
         
         # insert deposit
         tran_code = Charge.get_tran_code(master.seq)
+        vm.tran_code = tran_code
         
         data = Charge(
                      parent=self.get_key(vm.tran_date, vm.attendant_code), 

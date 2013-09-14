@@ -45,6 +45,7 @@ class DepositDataAccess(BaseTranDataAccess):
         
         # insert deposit
         tran_code = Deposit.get_tran_code(master.seq)
+        vm.tran_code = tran_code
         
         data = Deposit(
                        parent=self.get_key(vm.tran_date, vm.agent_code), 

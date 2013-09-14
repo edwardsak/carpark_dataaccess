@@ -54,6 +54,7 @@ class TopUpDataAccess(BaseTranDataAccess):
         
         # insert deposit
         tran_code = TopUp.get_tran_code(master.seq)
+        vm.tran_code = tran_code
         
         data = TopUp(
                      parent=self.get_key(vm.tran_date, vm.agent_code), 
